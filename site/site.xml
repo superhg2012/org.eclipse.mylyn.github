@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.mylyn.github.feature_0.2.1.201004211037.jar" id="org.eclipse.mylyn.github.feature" version="0.2.1.201004211037"/>
+</site>
