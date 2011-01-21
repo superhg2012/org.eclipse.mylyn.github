@@ -1,10 +1,10 @@
 h2. Fork Specifics
 
-This is a fork of the "original connector":http://smilebase.github.com/org.eclipse.mylyn.github by smilebase.  "Configuration/installation specifics for this fork can be found in the project wiki":http://wiki.github.com/dgreen99/org.eclipse.mylyn.github/
+This is a fork of the "original connector":http://smilebase.github.com/org.eclipse.mylyn.github by smilebase.  
 
 h2. Installation update site
 
-h3. http://dgreen99.github.com/org.eclipse.mylyn.github/site
+h3. TBD
 
 *WARNING:* This connector has ALPHA status. 
 
