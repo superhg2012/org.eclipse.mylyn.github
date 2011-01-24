@@ -4,6 +4,8 @@ import org.apache.commons.httpclient.StatusLine;
 
 public class PermissionDeniedException extends GitHubServiceException {
 
+	private static final long serialVersionUID = 1L;
+
 	protected PermissionDeniedException(Exception exception) {
 		super(exception);
 	}

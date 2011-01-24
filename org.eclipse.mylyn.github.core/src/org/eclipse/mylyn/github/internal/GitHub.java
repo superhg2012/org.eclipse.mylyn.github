@@ -9,13 +9,22 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 public class GitHub {
+
+	private GitHub() {
+
+	}
+
 	public static final String BUNDLE_ID = "org.eclipse.mylyn.github.core";
 	public static final String CONNECTOR_KIND = "github";
 
 	public static final String HTTP_WWW_GITHUB_ORG = "http://www.github.org";
 	public static final String HTTP_GITHUB_COM = "http://github.com";
+	public static final String HTTPS_GITHUB_COM = "https://github.com";
 
-	public static final Pattern URL_PATTERN = Pattern.compile("(?:"+Pattern.quote(HTTP_WWW_GITHUB_ORG)+"|"+Pattern.quote(HTTP_GITHUB_COM)+")/([^/]+)/([^/]+)");
+	public static final Pattern URL_PATTERN = Pattern.compile("(?:"
+			+ Pattern.quote(HTTP_WWW_GITHUB_ORG) + "|"
+			+ Pattern.quote(HTTP_GITHUB_COM) + "|"
+			+ Pattern.quote(HTTPS_GITHUB_COM) + ")/([^/]+)/([^/]+)");
 
 	public static IStatus createStatus(int severity, String message) {
 		return new Status(severity, BUNDLE_ID, message);
@@ -34,18 +43,18 @@ public class GitHub {
 	}
 
 	public static IStatus createErrorStatus(Throwable e) {
-		return createStatus(IStatus.ERROR, "Unexpected error: "
-				+ e.getMessage(), e);
+		return createStatus(IStatus.ERROR,
+				"Unexpected error: " + e.getMessage(), e);
 	}
 
 	public static ILog getLog() {
 		return Platform.getLog(Platform.getBundle(BUNDLE_ID));
 	}
-	
-	public static void logError(String message,Throwable t) {
+
+	public static void logError(String message, Throwable t) {
 		getLog().log(createErrorStatus(message, t));
 	}
-	
+
 	public static void logError(Throwable t) {
 		getLog().log(createErrorStatus(t.getMessage(), t));
 	}
@@ -65,20 +74,22 @@ public class GitHub {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * uses github.com
+	 * 
 	 * @see #createGitHubUrlAlternate(String, String)
 	 */
-	public static String createGitHubUrl(String user,String project) {
-		return HTTP_GITHUB_COM+'/'+user+'/'+project;
+	public static String createGitHubUrl(String user, String project) {
+		return HTTP_GITHUB_COM + '/' + user + '/' + project;
 	}
 
 	/**
 	 * Uses www.github.org
+	 * 
 	 * @see #createGitHubUrl(String, String)
 	 */
-	public static String createGitHubUrlAlternate(String user,String project) {
-		return HTTP_WWW_GITHUB_ORG+'/'+user+'/'+project;
+	public static String createGitHubUrlAlternate(String user, String project) {
+		return HTTP_WWW_GITHUB_ORG + '/' + user + '/' + project;
 	}
 }

@@ -7,26 +7,27 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 public class GitHubCredentials {
 	private final String username;
 	private final String apiToken;
-	
-	
+
 	public GitHubCredentials(String username, String apiToken) {
 		this.username = username;
 		this.apiToken = apiToken;
 	}
-	
+
 	public GitHubCredentials(AuthenticationCredentials credentials) {
-		this(credentials.getUserName(),credentials.getPassword());
+		this(credentials.getUserName(), credentials.getPassword());
 	}
 
 	public static GitHubCredentials create(TaskRepository repository) {
-		return new GitHubCredentials(repository.getCredentials(AuthenticationType.REPOSITORY));
+		return new GitHubCredentials(
+				repository.getCredentials(AuthenticationType.REPOSITORY));
 	}
-	
-	public String getUsername() {
+
+	public final String getUsername() {
 		return username;
 	}
-	public String getApiToken() {
+
+	public final String getApiToken() {
 		return apiToken;
 	}
-	
+
 }
