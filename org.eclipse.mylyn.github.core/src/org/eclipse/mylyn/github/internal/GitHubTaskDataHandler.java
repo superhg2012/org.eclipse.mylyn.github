@@ -62,9 +62,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
 		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
 		createAttribute(data, GitHubTaskAttributes.STATUS, issue.getState());
-		createAttribute(data, GitHubTaskAttributes.CREATION_DATE, toLocalDate(issue.getCreated_at()));
-		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE, toLocalDate(issue.getCreated_at()));
-		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE, toLocalDate(issue.getClosed_at()));
+		createAttribute(data, GitHubTaskAttributes.CREATION_DATE, toLocalDate(issue.getCreatedAt()));
+		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE, toLocalDate(issue.getCreatedAt()));
+		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE, toLocalDate(issue.getClosedAt()));
 		
 		if (isPartial(data)) {
 			data.setPartial(true);
@@ -163,9 +163,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		issue.setBody(getAttributeValue(taskData,GitHubTaskAttributes.BODY));
 		issue.setTitle(getAttributeValue(taskData,GitHubTaskAttributes.TITLE));
 		issue.setState(getAttributeValue(taskData,GitHubTaskAttributes.STATUS));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.CREATION_DATE));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.MODIFICATION_DATE));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.CLOSED_DATE));
+		issue.setCreatedAt(toGitHubDate(taskData,GitHubTaskAttributes.CREATION_DATE));
+		issue.setCreatedAt(toGitHubDate(taskData,GitHubTaskAttributes.MODIFICATION_DATE));
+		issue.setCreatedAt(toGitHubDate(taskData,GitHubTaskAttributes.CLOSED_DATE));
 		return issue;
 	}
 	
