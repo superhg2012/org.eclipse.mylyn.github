@@ -43,11 +43,11 @@ public class MarshalingTest {
 		//{"number":10,"votes":0,"created_at":"2010/02/04 21:03:54 -0800","body":"test description 2 ","title":"test issue for testing mylyn github connector2",
 		// "updated_at":"2010/02/04 21:09:37 -0800","closed_at":null,"user":"dgreen99","labels":[],"state":"open"}]}
 		assertEquals("10",issue.getNumber());
-		assertEquals("2010/02/04 21:03:54 -0800",issue.getCreated_at());
+		assertEquals("2010/02/04 21:03:54 -0800",issue.getCreatedAt());
 		assertEquals("test description 2 ",issue.getBody());
 		assertEquals("test issue for testing mylyn github connector2",issue.getTitle());
-		assertEquals("2010/02/04 21:09:37 -0800",issue.getUpdated_at());
-		assertNull(issue.getClosed_at());
+		assertEquals("2010/02/04 21:09:37 -0800",issue.getUpdatedAt());
+		assertNull(issue.getClosedAt());
 		assertEquals("dgreen99",issue.getUser());
 		assertEquals("open",issue.getState());
 	}
