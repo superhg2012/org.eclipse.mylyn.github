@@ -326,6 +326,8 @@ public class GitHubService {
 
 			method.setRequestBody(new NameValuePair[] { login, token, body,
 					title });
+			
+			method.addRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
 			executeMethod(method);
 			showIssue = gson.fromJson(new String(method.getResponseBody()),
@@ -393,6 +395,7 @@ public class GitHubService {
 			method.setRequestBody(new NameValuePair[] { login, token, body,
 					title });
 
+			method.addRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 			executeMethod(method);
 			GitHubShowIssue showIssue = gson.fromJson(method.getResponseBodyAsString(),
 						GitHubShowIssue.class);
