@@ -11,6 +11,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("restriction")
 public class GitHubRepositoryConnectorUITest {
 
 	private GitHubRepositoryConnectorUI connectorUI;
