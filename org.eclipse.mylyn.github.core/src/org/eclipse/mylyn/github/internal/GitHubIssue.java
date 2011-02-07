@@ -16,6 +16,7 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import com.google.gson.annotations.SerializedName;
 
 /**
  * GitHub Issue object to hold all the properties of an individual issue.
@@ -34,11 +35,14 @@ public class GitHubIssue {
 	 * open, closed
 	 */
 	private String state;
-	
+
+	@SerializedName("created_at")
 	private String createdAt;
+	@SerializedName("updated_at")
 	private String updatedAt;
+	@SerializedName("closed_at")
 	private String closedAt;
-	
+
 	/**
 	 * Create a new GitHub Issue Object
 	 * 
@@ -172,5 +176,5 @@ public class GitHubIssue {
 
 	public void setClosedAt(String closedAt) {
 		this.closedAt = closedAt;
-	}	
+	}
 }
