@@ -254,19 +254,15 @@ public class GitHubService {
 		PostMethod method = null;
 		boolean success = false;
 		try {
-			// build HTTP GET method
 			method = new PostMethod(gitURLBase + gitIssueRoot + REMOVE_LABEL
 					+ user + "/" + repo + "/" + label + "/"
 					+ Integer.toString(issueNumber));
 
-			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login", credentials.getUsername());
-			final NameValuePair token = new NameValuePair("token", credentials.getUsername());
+			final NameValuePair token = new NameValuePair("token", credentials.getApiToken());
 			method.setRequestBody(new NameValuePair[] { login, token });
 
-			// execute HTTP GET method
 			executeMethod(method);
-			// Check the response, make sure the action was successful
 			final String response = method.getResponseBodyAsString();
 			if (!response.contains(label.subSequence(0, label.length()))) {
 				success = true;
