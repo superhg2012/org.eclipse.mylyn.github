@@ -2,15 +2,12 @@ package org.eclipse.mylyn.github.tests.ui;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import junit.framework.Assert;
 
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnectorUI;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
-import org.eclipse.mylyn.tasks.ui.TaskHyperlink;
 import org.junit.Before;
 import org.junit.Test;
 
