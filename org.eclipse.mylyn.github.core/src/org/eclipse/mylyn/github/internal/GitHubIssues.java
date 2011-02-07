@@ -16,6 +16,8 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import java.util.Arrays;
+
 /**
  * Container of multiple GitHub Issues, used when returning JSON objects
  */
@@ -29,7 +31,7 @@ public class GitHubIssues {
 	 * @return The array of individual GitHub Issues
 	 */
 	public GitHubIssue[] getIssues() {
-		return issues;
+		return Arrays.copyOf(issues, issues.length);
 	}
 
 }
