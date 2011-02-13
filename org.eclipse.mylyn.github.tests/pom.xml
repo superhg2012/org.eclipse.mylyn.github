@@ -20,7 +20,6 @@
 				<configuration>
 					<testSuite>org.eclipse.mylyn.github.tests</testSuite>
 					<testClass>org.eclipse.mylyn.github.tests.AllHeadlessTests</testClass>
-					<testClass>org.eclipse.mylyn.github.tests.ui.GitHubRepositoryConnectorUITest</testClass>
 					<argLine>-Xmx512m</argLine>
 					<bundleStartLevel>
 						<bundle>
