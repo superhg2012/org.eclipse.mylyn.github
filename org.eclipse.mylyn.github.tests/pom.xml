@@ -11,4 +11,26 @@
     <artifactId>test</artifactId>
     <packaging>eclipse-test-plugin</packaging>
     <name>Eclipse Mylyn to GitHub connector (Test)</name>
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.tycho</groupId>
+				<artifactId>maven-osgi-test-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<testSuite>org.eclipse.mylyn.github.tests</testSuite>
+					<testClass>org.eclipse.mylyn.github.tests.AllHeadlessTests</testClass>
+					<testClass>org.eclipse.mylyn.github.tests.ui.GitHubRepositoryConnectorUITest</testClass>
+					<argLine>-Xmx512m</argLine>
+					<bundleStartLevel>
+						<bundle>
+							<id>org.eclipse.equinox.ds</id>
+							<level>1</level>
+							<autoStart>true</autoStart>
+						</bundle>
+					</bundleStartLevel>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
