@@ -15,15 +15,16 @@
 	<name>Eclipse Mylyn to GitHub connector (parent)</name>
 
 	<properties>
-		<tycho-version>0.8.0</tycho-version>
-		<eclipse-site>http://download.eclipse.org/releases/galileo</eclipse-site>
+		<tycho-version>0.10.0</tycho-version>
+		<eclipse-site>http://download.eclipse.org/releases/helios</eclipse-site>
 	</properties>
 
 	<modules>
 		<module>org.eclipse.mylyn.github.core</module>
 		<module>org.eclipse.mylyn.github.ui</module>
 		<module>org.eclipse.mylyn.github.feature</module>
-		<module>org.eclipse.mylyn.github_site</module>
+		<module>org.eclipse.mylyn.github.site</module>
+		<module>org.eclipse.mylyn.github.tests</module>
 	</modules>
 
 	<repositories>
@@ -36,15 +37,15 @@
 
 	<build>
 		<plugins>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-compiler-plugin</artifactId>
-                                <version>2.1</version>
-                                <configuration>
-                                        <source>1.6</source>
-                                        <target>1.6</target>
-                                </configuration>
-                        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.sonatype.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
