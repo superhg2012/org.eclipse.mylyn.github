@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.mylyn.github.feature_0.2.1.201005060821.jar" id="org.eclipse.mylyn.github.feature" version="0.2.1.201005060821"/>
+   <feature url="features/org.eclipse.mylyn.github.feature_0.2.2.201102132009.jar" id="org.eclipse.mylyn.github.feature" version="0.2.2.201102132009"/>
 </site>
