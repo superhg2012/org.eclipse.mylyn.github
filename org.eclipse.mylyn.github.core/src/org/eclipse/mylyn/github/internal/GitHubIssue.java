@@ -16,6 +16,9 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -30,7 +33,7 @@ public class GitHubIssue {
 	private String title;
 
 	private String body;
-
+	
 	/**
 	 * open, closed
 	 */
@@ -42,6 +45,10 @@ public class GitHubIssue {
 	private String updatedAt;
 	@SerializedName("closed_at")
 	private String closedAt;
+	
+	private Integer comments;
+	
+	private List<String> labels;
 
 	/**
 	 * Create a new GitHub Issue Object
@@ -56,11 +63,13 @@ public class GitHubIssue {
 	 *            - The text body of the issue;
 	 */
 	public GitHubIssue(final String number, final String user,
-			final String title, final String body) {
+			final String title, final String body, final Integer comments, final List<String> labels) {
 		this.number = number;
 		this.user = user;
 		this.title = title;
 		this.body = body;
+		this.setComments(comments);
+		this.setLabels(labels);
 	}
 
 	/**
@@ -71,6 +80,8 @@ public class GitHubIssue {
 		this.user = "";
 		this.title = "";
 		this.body = "";
+		this.setComments(0);
+		this.setLabels(new ArrayList<String>());
 	}
 
 	/**
@@ -176,5 +187,21 @@ public class GitHubIssue {
 
 	public void setClosedAt(String closedAt) {
 		this.closedAt = closedAt;
+	}
+
+	public void setComments(Integer comments) {
+		this.comments = comments;
+	}
+
+	public Integer getComments() {
+		return comments;
+	}
+
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
+	}
+
+	public List<String> getLabels() {
+		return labels;
 	}
 }

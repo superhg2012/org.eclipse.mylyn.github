@@ -46,33 +46,36 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		setNeedsPrivateSection(true);
 		setNeedsSubmitButton(true);
 	}
-	
+
 	@Override
 	protected Set<TaskEditorPartDescriptor> createPartDescriptors() {
-		Set<TaskEditorPartDescriptor> partDescriptors = super.createPartDescriptors();
-		Iterator<TaskEditorPartDescriptor> descriptorIt = partDescriptors.iterator();
+		Set<TaskEditorPartDescriptor> partDescriptors = super
+				.createPartDescriptors();
+		Iterator<TaskEditorPartDescriptor> descriptorIt = partDescriptors
+				.iterator();
 		while (descriptorIt.hasNext()) {
 			TaskEditorPartDescriptor partDescriptor = descriptorIt.next();
 			if (partDescriptor.getId().equals(ID_PART_ATTRIBUTES)) {
-				descriptorIt.remove();
+				// descriptorIt.remove();
 			} else if (partDescriptor.getId().equals(ID_PART_COMMENTS)) {
 				// currently the API doesn't support reading existing comments,
-				// though it does allow for creating them.  Silly really.
-				// see http://support.github.com/discussions/feature-requests/696-issues-api-improvement
+				// though it does allow for creating them. Silly really.
+				// see
+				// http://support.github.com/discussions/feature-requests/696-issues-api-improvement
 				descriptorIt.remove();
 			}
 		}
 		return partDescriptors;
 	}
-	
-	
+
 	@Override
 	protected AttributeEditorFactory createAttributeEditorFactory() {
-		return new AttributeEditorFactory(getModel(), getTaskRepository(), getEditorSite()) {
+		return new AttributeEditorFactory(getModel(), getTaskRepository(),
+				getEditorSite()) {
 			@Override
 			public AbstractAttributeEditor createEditor(String type,
 					TaskAttribute taskAttribute) {
-				// TODO Auto-generated method stub
+
 				return super.createEditor(type, taskAttribute);
 			}
 		};

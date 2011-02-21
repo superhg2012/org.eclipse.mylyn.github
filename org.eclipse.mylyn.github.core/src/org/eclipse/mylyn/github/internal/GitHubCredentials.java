@@ -4,13 +4,21 @@ import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
 import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 
+/**
+ * <p>
+ * Credential data type.
+ * </p>
+ * 
+ * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
+ * 
+ */
 public class GitHubCredentials {
 	private final String username;
-	private final String apiToken;
+	private final String token;
 
 	public GitHubCredentials(String username, String apiToken) {
 		this.username = username;
-		this.apiToken = apiToken;
+		this.token = apiToken;
 	}
 
 	public GitHubCredentials(AuthenticationCredentials credentials) {
@@ -27,7 +35,7 @@ public class GitHubCredentials {
 	}
 
 	public final String getApiToken() {
-		return apiToken;
+		return token;
 	}
 
 }

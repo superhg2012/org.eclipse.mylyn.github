@@ -50,6 +50,8 @@ public class MarshalingTest {
 		assertNull(issue.getClosedAt());
 		assertEquals("dgreen99",issue.getUser());
 		assertEquals("open",issue.getState());
+		assertTrue(issue.getLabels().isEmpty());
+		assertTrue(issue.getComments()== 5);
 	}
 
 	private String getResource(String resource) {

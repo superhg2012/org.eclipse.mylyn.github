@@ -16,8 +16,9 @@
  */
 package org.eclipse.mylyn.github.internal;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static org.eclipse.mylyn.github.internal.GitHubConnectorLogger.createErrorStatus;
+import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
+import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryUser;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -40,11 +41,10 @@ import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
  */
 public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
-
 	/**
 	 * GitHub kind.
 	 */
-	protected static final String KIND = GitHub.CONNECTOR_KIND;
+	protected static final String LABEL = GitHub.CONNECTOR_KIND;
 
 	/**
 	 * GitHub service which creates, lists, deletes, etc. GitHub tasks.
@@ -59,7 +59,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	public GitHubRepositoryConnector() {
 		taskDataHandler = new GitHubTaskDataHandler(this);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -87,7 +87,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 */
 	@Override
 	public String getConnectorKind() {
-		return KIND;
+		return GitHub.CONNECTOR_KIND;
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 */
 	@Override
 	public String getLabel() {
-		return "GitHub";
+		return LABEL;
 	}
 
 	/**
@@ -112,31 +112,32 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			ISynchronizationSession session, IProgressMonitor monitor) {
 
 		IStatus result = Status.OK_STATUS;
-		String queryStatus = query.getAttribute("status");
-		
+		String queryStatus = query.getAttribute(GitHub.TASK_STATUS);
+
 		String[] statuses;
-		if (queryStatus.equals("all")) {
-			statuses = new String[] {"open","closed"};
+		if (queryStatus.equals(GitHub.TASK_STATUS_ALL)) {
+			statuses = new String[] { GitHub.TASK_STATUS_OPEN,
+					GitHub.TASK_STATUS_CLOSED };
 		} else {
 			statuses = new String[] { queryStatus };
 		}
-		
-		monitor.beginTask("Querying repository ...", statuses.length);
+
+		monitor.beginTask(GitHub.MONITOR_STATUS_IN_PROGRESS, statuses.length);
 		try {
-			String user = GitHub.computeTaskRepositoryUser(repository.getUrl());
-			String project = GitHub.computeTaskRepositoryProject(repository.getUrl());
-			
+			String user = buildTaskRepositoryUser(repository.getUrl());
+			String project = buildTaskRepositoryProject(repository.getUrl());
+
 			// perform query
-			
-			for (String status: statuses) {
-				GitHubIssues issues = service.searchIssues(user,project,
-						status, query
-								.getAttribute("queryText"));
-	
+
+			for (String status : statuses) {
+				GitHubIssues issues = service
+						.searchIssues(user, project, status,
+								query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE));
+
 				// collect task data
 				for (GitHubIssue issue : issues.getIssues()) {
 					TaskData taskData = taskDataHandler.createPartialTaskData(
-							repository, monitor,user, project, issue);
+							repository, monitor, user, project, issue);
 					collector.accept(taskData);
 				}
 				monitor.worked(1);
@@ -144,57 +145,45 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 			result = Status.OK_STATUS;
 		} catch (GitHubServiceException e) {
-			result = GitHub.createErrorStatus(e);
+			result = createErrorStatus(e);
 		}
 
 		monitor.done();
 		return result;
 	}
 
-
 	@Override
 	public TaskData getTaskData(TaskRepository repository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
 
-		String user = GitHub.computeTaskRepositoryUser(repository.getUrl());
-		String project = GitHub.computeTaskRepositoryProject(repository.getUrl());
-		
+		String user = buildTaskRepositoryUser(repository.getUrl());
+		String project = buildTaskRepositoryProject(repository.getUrl());
+
 		try {
 			GitHubIssue issue = service.showIssue(user, project, taskId);
-			TaskData taskData = taskDataHandler.createTaskData(repository, monitor, user, project, issue);
-			
+			TaskData taskData = taskDataHandler.createTaskData(repository,
+					monitor, user, project, issue);
+
 			return taskData;
 		} catch (GitHubServiceException e) {
-			throw new CoreException(GitHub.createErrorStatus(e));
+			throw new CoreException(createErrorStatus(e));
 		}
 	}
 
-
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String taskFullUrl) {
-		if (taskFullUrl != null) {
-			Matcher matcher = Pattern.compile("(http://.+?)/issues/issue/([^/]+)").matcher(taskFullUrl);
-			if (matcher.matches()) {
-				return matcher.group(1);
-			}
-		}
-		return null;
+		return GitHubRepositoryUrlBuilder
+				.obtainRepositoryUrlFromTaskUrl(taskFullUrl);
 	}
 
 	@Override
 	public String getTaskIdFromTaskUrl(String taskFullUrl) {
-		if (taskFullUrl != null) {
-			Matcher matcher = Pattern.compile(".+?/issues/issue/([^/]+)").matcher(taskFullUrl);
-			if (matcher.matches()) {
-				return matcher.group(1);
-			}
-		}
-		return null;
+		return GitHubRepositoryUrlBuilder.obtainTaskIdFromTaskUrl(taskFullUrl);
 	}
 
 	@Override
 	public String getTaskUrl(String repositoryUrl, String taskId) {
-		return repositoryUrl+"/issues/issue/"+taskId;
+		return GitHubRepositoryUrlBuilder.obtainTaskUrl(repositoryUrl, taskId);
 	}
 
 	@Override
@@ -212,7 +201,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
 		if (!taskData.isNew()) {
-			task.setUrl(getTaskUrl(taskRepository.getUrl(), taskData.getTaskId()));
+			task.setUrl(getTaskUrl(taskRepository.getUrl(),
+					taskData.getTaskId()));
 		}
 		new TaskMapper(taskData).applyTo(task);
 	}

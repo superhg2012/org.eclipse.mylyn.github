@@ -118,7 +118,7 @@ public class GitHubRepositorySettingsPage extends
 					monitor.subTask("Contacting server...");
 					try {
 						// verify the repo
-						service.searchIssues(user, repo, new String("open"),"");
+						service.searchIssues(user, repo, "open","");
 						monitor.worked(400);
 						
 						// verify the credentials
