@@ -32,9 +32,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	private static final String DATA_VERSION = "1";
-	/**
-	 * 
-	 */
+	
 	private GitHubTaskAttributeMapper taskAttributeMapper = null;
 	private final GitHubRepositoryConnector connector;
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
@@ -54,6 +52,74 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		return this.taskAttributeMapper;
 	}
 
+	@Override
+	public boolean initializeTaskData(TaskRepository repository, TaskData data,
+			ITaskMapping initializationData, IProgressMonitor monitor)
+			throws CoreException {
+
+		data.setVersion(DATA_VERSION);
+
+		for (GitHubTaskAttributes attr : GitHubTaskAttributes.values()) {
+			if (attr.isInitTask()) {
+				createAttribute(data, attr, null);
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public RepositoryResponse postTaskData(TaskRepository repository,
+			TaskData taskData, Set<TaskAttribute> oldAttributes,
+			IProgressMonitor monitor) throws CoreException {
+
+		GitHubIssue issue = createIssue(taskData);
+		String user = buildTaskRepositoryUser(repository.getUrl());
+		String repo = buildTaskRepositoryProject(repository.getUrl());
+		try {
+
+			GitHubService service = connector.getService();
+			GitHubCredentials credentials = GitHubCredentials
+					.create(repository);
+			if (taskData.isNew()) {
+				issue = service.openIssue(user, repo, issue, credentials);
+			} else {
+				TaskAttribute operationAttribute = taskData.getRoot()
+						.getAttribute(TaskAttribute.OPERATION);
+
+				GitHubTaskOperation operation = null;
+
+				if (operationAttribute != null) {
+					String opId = operationAttribute.getValue();
+					operation = GitHubTaskOperation.fromId(opId);
+
+				}
+				if (operation != null && operation != GitHubTaskOperation.LEAVE) {
+					service.editIssue(user, repo, issue, credentials);
+					switch (operation) {
+					case REOPEN:
+						service.reopenIssue(user, repo, issue, credentials);
+						break;
+					case CLOSE:
+						service.closeIssue(user, repo, issue, credentials);
+						break;
+					default:
+						throw new IllegalStateException("not implemented: "
+								+ operation);
+					}
+				} else {
+					service.editIssue(user, repo, issue, credentials);
+				}
+			}
+			return new RepositoryResponse(
+					taskData.isNew() ? ResponseKind.TASK_CREATED
+							: ResponseKind.TASK_UPDATED, issue.getNumber());
+		} catch (GitHubServiceException e) {
+			throw new CoreException(createErrorStatus(e));
+		}
+
+	}
+
 	public TaskData createPartialTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
 			GitHubIssue issue) {
@@ -66,15 +132,15 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		createOperations(data, issue);
 
 		createAttribute(data, GitHubTaskAttributes.KEY, issue.getNumber());
-		//createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
-		//createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
-		//createAttribute(data, GitHubTaskAttributes.STATUS, issue.getState());
-		//createAttribute(data, GitHubTaskAttributes.CREATION_DATE,
-			//	toLocalDate(issue.getCreatedAt()));
-		//createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE,
-			//	toLocalDate(issue.getCreatedAt()));
-		//createAttribute(data, GitHubTaskAttributes.CLOSED_DATE,
-		//		toLocalDate(issue.getClosedAt()));
+		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
+		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
+		createAttribute(data, GitHubTaskAttributes.STATUS, issue.getState());
+		createAttribute(data, GitHubTaskAttributes.CREATION_DATE,
+				toLocalDate(issue.getCreatedAt()));
+		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE,
+				toLocalDate(issue.getCreatedAt()));
+		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE,
+				toLocalDate(issue.getClosedAt()));
 		createLabelAttribute(data, GitHubTaskAttributes.LABEL,
 				issue.getLabels());
 
@@ -230,74 +296,6 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		if (value != null) {
 			attr.addValue(value);
 		}
-	}
-
-	@Override
-	public boolean initializeTaskData(TaskRepository repository, TaskData data,
-			ITaskMapping initializationData, IProgressMonitor monitor)
-			throws CoreException {
-
-		data.setVersion(DATA_VERSION);
-
-		for (GitHubTaskAttributes attr : GitHubTaskAttributes.values()) {
-			if (attr.isInitTask()) {
-				createAttribute(data, attr, null);
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public RepositoryResponse postTaskData(TaskRepository repository,
-			TaskData taskData, Set<TaskAttribute> oldAttributes,
-			IProgressMonitor monitor) throws CoreException {
-
-		GitHubIssue issue = createIssue(taskData);
-		String user = buildTaskRepositoryUser(repository.getUrl());
-		String repo = buildTaskRepositoryProject(repository.getUrl());
-		try {
-
-			GitHubService service = connector.getService();
-			GitHubCredentials credentials = GitHubCredentials
-					.create(repository);
-			if (taskData.isNew()) {
-				issue = service.openIssue(user, repo, issue, credentials);
-			} else {
-				TaskAttribute operationAttribute = taskData.getRoot()
-						.getAttribute(TaskAttribute.OPERATION);
-
-				GitHubTaskOperation operation = null;
-
-				if (operationAttribute != null) {
-					String opId = operationAttribute.getValue();
-					operation = GitHubTaskOperation.fromId(opId);
-
-				}
-				if (operation != null && operation != GitHubTaskOperation.LEAVE) {
-					service.editIssue(user, repo, issue, credentials);
-					switch (operation) {
-					case REOPEN:
-						service.reopenIssue(user, repo, issue, credentials);
-						break;
-					case CLOSE:
-						service.closeIssue(user, repo, issue, credentials);
-						break;
-					default:
-						throw new IllegalStateException("not implemented: "
-								+ operation);
-					}
-				} else {
-					service.editIssue(user, repo, issue, credentials);
-				}
-			}
-			return new RepositoryResponse(
-					taskData.isNew() ? ResponseKind.TASK_CREATED
-							: ResponseKind.TASK_UPDATED, issue.getNumber());
-		} catch (GitHubServiceException e) {
-			throw new CoreException(createErrorStatus(e));
-		}
-
 	}
 
 }
