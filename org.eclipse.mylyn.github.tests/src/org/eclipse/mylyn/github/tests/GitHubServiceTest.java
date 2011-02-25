@@ -45,7 +45,7 @@ public class GitHubServiceTest {
 	 * Test the GitHubService issue searching implementation
 	 */
 	@Test
-	public void searchIssues() throws Exception {
+	public final void searchIssues() throws Exception {
 		final GitHubService service = new GitHubService();
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
 				TEST_PROJECT, "open", "test");
@@ -56,7 +56,7 @@ public class GitHubServiceTest {
 	 * Test the GitHubService implementation for opening a new issue.
 	 */
 	@Test
-	public void openIssue() throws Exception {
+	public final void openIssue() throws Exception {
 		final GitHubService service = new GitHubService();
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
@@ -74,7 +74,7 @@ public class GitHubServiceTest {
 	 * Test the GitHubService implementation for opening a new issue.
 	 */
 	@Test
-	public void editIssue() throws Exception {
+	public final void editIssue() throws Exception {
 		final GitHubService service = new GitHubService();
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
@@ -102,7 +102,7 @@ public class GitHubServiceTest {
 	 * issue.
 	 */
 	@Test
-	public void addLabel() throws Exception {
+	public final void addLabel() throws Exception {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
 				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
@@ -114,7 +114,7 @@ public class GitHubServiceTest {
 	 * any GitHub issue.
 	 */
 	@Test
-	public void removeLable() throws Exception {
+	public final void removeLable() throws Exception {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
 				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
