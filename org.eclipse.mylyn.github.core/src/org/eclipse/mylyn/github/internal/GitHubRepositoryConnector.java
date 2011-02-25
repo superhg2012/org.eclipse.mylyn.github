@@ -76,7 +76,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * @return always {@code true}
 	 */
 	@Override
-	public boolean canCreateTaskFromKey(TaskRepository repository) {
+	public final boolean canCreateTaskFromKey(TaskRepository repository) {
 		return true;
 	}
 
@@ -86,7 +86,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * @see #KIND
 	 */
 	@Override
-	public String getConnectorKind() {
+	public final String getConnectorKind() {
 		return GitHub.CONNECTOR_KIND;
 	}
 
@@ -94,7 +94,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getLabel() {
+	public final String getLabel() {
 		return LABEL;
 	}
 
@@ -102,16 +102,15 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AbstractTaskDataHandler getTaskDataHandler() {
+	public final AbstractTaskDataHandler getTaskDataHandler() {
 		return this.taskDataHandler;
 	}
 
 	@Override
-	public IStatus performQuery(TaskRepository repository,
+	public final IStatus performQuery(TaskRepository repository,
 			IRepositoryQuery query, TaskDataCollector collector,
 			ISynchronizationSession session, IProgressMonitor monitor) {
 
-		IStatus result = Status.OK_STATUS;
 		String queryStatus = query.getAttribute(GitHub.TASK_STATUS);
 
 		String[] statuses;
@@ -122,6 +121,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			statuses = new String[] { queryStatus };
 		}
 
+		IStatus result;
 		monitor.beginTask(GitHub.MONITOR_STATUS_IN_PROGRESS, statuses.length);
 		try {
 			String user = buildTaskRepositoryUser(repository.getUrl());
@@ -153,7 +153,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	}
 
 	@Override
-	public TaskData getTaskData(TaskRepository repository, String taskId,
+	public final TaskData getTaskData(TaskRepository repository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
 
 		String user = buildTaskRepositoryUser(repository.getUrl());
@@ -171,34 +171,35 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	}
 
 	@Override
-	public String getRepositoryUrlFromTaskUrl(String taskFullUrl) {
+	public final String getRepositoryUrlFromTaskUrl(String taskFullUrl) {
 		return GitHubRepositoryUrlBuilder
 				.obtainRepositoryUrlFromTaskUrl(taskFullUrl);
 	}
 
 	@Override
-	public String getTaskIdFromTaskUrl(String taskFullUrl) {
+	public final String getTaskIdFromTaskUrl(String taskFullUrl) {
 		return GitHubRepositoryUrlBuilder.obtainTaskIdFromTaskUrl(taskFullUrl);
 	}
 
 	@Override
-	public String getTaskUrl(String repositoryUrl, String taskId) {
+	public final String getTaskUrl(String repositoryUrl, String taskId) {
 		return GitHubRepositoryUrlBuilder.obtainTaskUrl(repositoryUrl, taskId);
 	}
 
 	@Override
-	public void updateRepositoryConfiguration(TaskRepository taskRepository,
-			IProgressMonitor monitor) throws CoreException {
+	public final void updateRepositoryConfiguration(
+			TaskRepository taskRepository, IProgressMonitor monitor)
+			throws CoreException {
 	}
 
 	@Override
-	public boolean hasTaskChanged(TaskRepository repository, ITask task,
+	public final boolean hasTaskChanged(TaskRepository repository, ITask task,
 			TaskData taskData) {
 		return new TaskMapper(taskData).hasChanges(task);
 	}
 
 	@Override
-	public void updateTaskFromTaskData(TaskRepository taskRepository,
+	public final void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
 		if (!taskData.isNew()) {
 			task.setUrl(getTaskUrl(taskRepository.getUrl(),
@@ -207,7 +208,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		new TaskMapper(taskData).applyTo(task);
 	}
 
-	public GitHubService getService() {
+	public final GitHubService getService() {
 		return service;
 	}
 }

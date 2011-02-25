@@ -16,6 +16,19 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import static org.eclipse.mylyn.github.internal.GitHub.API_ISSUES_ROOT;
+import static org.eclipse.mylyn.github.internal.GitHub.API_URL_BASE;
+import static org.eclipse.mylyn.github.internal.GitHub.EMAILS;
+import static org.eclipse.mylyn.github.internal.GitHub.LIST;
+import static org.eclipse.mylyn.github.internal.GitHub.SEARCH;
+import static org.eclipse.mylyn.github.internal.GitHub.ADD_LABEL;
+import static org.eclipse.mylyn.github.internal.GitHub.REMOVE_LABEL;
+import static org.eclipse.mylyn.github.internal.GitHub.OPEN;
+import static org.eclipse.mylyn.github.internal.GitHub.REOPEN;
+import static org.eclipse.mylyn.github.internal.GitHub.CLOSE;
+import static org.eclipse.mylyn.github.internal.GitHub.EDIT;
+import static org.eclipse.mylyn.github.internal.GitHub.SHOW;
+
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -37,14 +50,6 @@ public class GitHubService {
 
 	private static final Log LOG = LogFactory.getLog(GitHubService.class);
 
-	/**
-	 * GitHub Issues API Documentation: http://develop.github.com/p/issues.html
-	 */
-	private final String gitURLBase = "https://github.com/api/v2/json/";
-
-	private final String gitIssueRoot = "issues/";
-	private final String gitUserRoot = "user/";
-
 	private final HttpClient httpClient;
 
 	private final Gson gson;
@@ -52,20 +57,6 @@ public class GitHubService {
 	/**
 	 * Helper class, describing all of the possible GitHub API actions.
 	 */
-	private final static String OPEN = "open/"; // Implemented
-	private static final String REOPEN = "reopen/";
-	private final static String CLOSE = "close/";
-	private final static String EDIT = "edit/"; // Implemented
-	// private final static String VIEW = "view/";
-	private final static String SHOW = "show/"; // :user/:repo/:number
-	private final static String LIST = "list/"; // Implemented
-	private final static String SEARCH = "search/"; // Implemented
-	// private final static String REOPEN = "reopen/";
-	// private final static String COMMENT = "comment/";
-	private final static String ADD_LABEL = "label/add/"; // Implemented
-	private final static String REMOVE_LABEL = "label/remove/"; // Implemented
-
-	private static final String EMAILS = "emails";
 
 	/**
 	 * Constructor, create the client and JSON/Java interface object.
@@ -82,31 +73,23 @@ public class GitHubService {
 	 * 
 	 * @return true if and only if the credentials are correct
 	 */
-	public boolean verifyCredentials(GitHubCredentials credentials)
+	public final boolean verifyCredentials(GitHubCredentials credentials)
 			throws GitHubServiceException {
 		PostMethod method = null;
-
 		boolean success = false;
-
 		try {
-			method = new PostMethod(gitURLBase + gitUserRoot + EMAILS);
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EMAILS);
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-
 			// if we reach here we know that credentials were good
 			success = true;
 		} catch (PermissionDeniedException e) {
 			// if we provide bad credentials, GitHub will return 403 or 401
 			return false;
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runtimeException) {
-			throw runtimeException;
-		} catch (final Exception exception) {
-			throw new GitHubServiceException(exception);
 		} finally {
-			if (method != null)
+			if (method != null) {
 				method.releaseConnection();
+			}
 		}
 		return success;
 	}
@@ -138,10 +121,10 @@ public class GitHubService {
 		try {
 			// build HTTP GET method
 			if (searchTerm.trim().length() == 0) { // no search term: list all
-				method = new GetMethod(gitURLBase + gitIssueRoot + LIST + user
-						+ "/" + repo + "/" + state);
+				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
+						+ user + "/" + repo + "/" + state);
 			} else {
-				method = new GetMethod(gitURLBase + gitIssueRoot + SEARCH
+				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SEARCH
 						+ user + "/" + repo + "/" + state + "/" + searchTerm);
 			}
 			// execute HTTP GET method
@@ -192,7 +175,7 @@ public class GitHubService {
 
 		try {
 			// build HTTP GET method
-			method = new PostMethod(gitURLBase + gitIssueRoot + ADD_LABEL
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + ADD_LABEL
 					+ user + "/" + repo + "/" + label + "/"
 					+ Integer.toString(issueNumber));
 			method.setRequestBody(getCredentials(credentials));
@@ -244,8 +227,8 @@ public class GitHubService {
 		PostMethod method = null;
 		boolean success = false;
 		try {
-			method = new PostMethod(gitURLBase + gitIssueRoot + REMOVE_LABEL
-					+ user + "/" + repo + "/" + label + "/"
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT
+					+ REMOVE_LABEL + user + "/" + repo + "/" + label + "/"
 					+ Integer.toString(issueNumber));
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
@@ -297,8 +280,8 @@ public class GitHubService {
 		PostMethod method = null;
 		try {
 			// Create the HTTP POST method
-			method = new PostMethod(gitURLBase + gitIssueRoot + OPEN + user
-					+ "/" + repo);
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + OPEN
+					+ user + "/" + repo);
 			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login",
 					credentials.getUsername());
@@ -368,8 +351,8 @@ public class GitHubService {
 		try {
 
 			// Create the HTTP POST method
-			method = new PostMethod(gitURLBase + gitIssueRoot + EDIT + user
-					+ "/" + repo + "/" + issue.getNumber());
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EDIT
+					+ user + "/" + repo + "/" + issue.getNumber());
 			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login",
 					credentials.getUsername());
@@ -419,7 +402,7 @@ public class GitHubService {
 		GetMethod method = null;
 		try {
 			// build HTTP GET method
-			method = new GetMethod(gitURLBase + gitIssueRoot + SHOW + user
+			method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SHOW + user
 					+ "/" + repo + "/" + issueNumber);
 
 			// execute HTTP GET method
@@ -519,8 +502,9 @@ public class GitHubService {
 		try {
 
 			// Create the HTTP POST method
-			method = new PostMethod(gitURLBase + gitIssueRoot + githubOperation
-					+ user + "/" + repo + "/" + issue.getNumber());
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT
+					+ githubOperation + user + "/" + repo + "/"
+					+ issue.getNumber());
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
 			GitHubShowIssue showIssue = gson.fromJson(

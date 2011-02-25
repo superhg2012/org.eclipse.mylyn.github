@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHubRepositoryUrlBuilder {
+public final class GitHubRepositoryUrlBuilder {
 
 	private static final String FORWARD_SLASH = "/";
 
@@ -45,8 +45,8 @@ public class GitHubRepositoryUrlBuilder {
 	 * @see #buildGitHubUrlAlternate(String, String)
 	 */
 	public static String buildGitHubUrl(String user, String project) {
-		return GitHub.HTTP_GITHUB_COM + FORWARD_SLASH + user + FORWARD_SLASH
-				+ project;
+		return new StringBuilder(GitHub.HTTP_GITHUB_COM).append(FORWARD_SLASH)
+				.append(user).append(FORWARD_SLASH).append(project).toString();
 	}
 
 	/**
@@ -55,10 +55,11 @@ public class GitHubRepositoryUrlBuilder {
 	 * @see #buildGitHubUrl(String, String)
 	 */
 	public static String buildGitHubUrlAlternate(String user, String project) {
-		return GitHub.HTTP_WWW_GITHUB_ORG + FORWARD_SLASH + user
-				+ FORWARD_SLASH + project;
+		return new StringBuilder(GitHub.HTTP_WWW_GITHUB_ORG)
+				.append(FORWARD_SLASH).append(user).append(FORWARD_SLASH)
+				.append(project).toString();
 	}
-	
+
 	public static String obtainRepositoryUrlFromTaskUrl(String taskFullUrl) {
 		if (taskFullUrl != null) {
 			Matcher matcher = Pattern.compile(
@@ -69,7 +70,7 @@ public class GitHubRepositoryUrlBuilder {
 		}
 		return null;
 	}
-	
+
 	public static String obtainTaskIdFromTaskUrl(String taskFullUrl) {
 		if (taskFullUrl != null) {
 			Matcher matcher = Pattern.compile(".+?/issues/issue/([^/]+)")
@@ -80,9 +81,10 @@ public class GitHubRepositoryUrlBuilder {
 		}
 		return null;
 	}
-	
+
 	public static String obtainTaskUrl(String repositoryUrl, String taskId) {
-		return repositoryUrl + "/issues/issue/" + taskId;
+		return new StringBuilder(repositoryUrl).append("/issues/issue/")
+				.append(taskId).toString();
 	}
 
 }
