@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 @SuppressWarnings("restriction")
 @RunWith(JUnit4.class)
@@ -30,47 +32,48 @@ public class MarshalingTest {
 	}
 
 	@Test
-	public void unmarshalIssues() {
+	public void unmarshalIssues() throws JsonSyntaxException, IOException {
 		GitHubIssues issues = gson.fromJson(
 				getResource("resources/issues.json"), GitHubIssues.class);
 
 		assertTrue(issues != null);
 		assertTrue(issues.getIssues() != null);
-		
-		assertEquals(10,issues.getIssues().length);
-		
+
+		assertEquals(10, issues.getIssues().length);
+
 		GitHubIssue issue = issues.getIssues()[9];
-		//{"number":10,"votes":0,"created_at":"2010/02/04 21:03:54 -0800","body":"test description 2 ","title":"test issue for testing mylyn github connector2",
+		// {"number":10,"votes":0,"created_at":"2010/02/04 21:03:54 -0800","body":"test description 2 ","title":"test issue for testing mylyn github connector2",
 		// "updated_at":"2010/02/04 21:09:37 -0800","closed_at":null,"user":"dgreen99","labels":[],"state":"open"}]}
-		assertEquals("10",issue.getNumber());
-		assertEquals("2010/02/04 21:03:54 -0800",issue.getCreatedAt());
-		assertEquals("test description 2 ",issue.getBody());
-		assertEquals("test issue for testing mylyn github connector2",issue.getTitle());
-		assertEquals("2010/02/04 21:09:37 -0800",issue.getUpdatedAt());
+		assertEquals("10", issue.getNumber());
+		assertEquals("2010/02/04 21:03:54 -0800", issue.getCreatedAt());
+		assertEquals("test description 2 ", issue.getBody());
+		assertEquals("test issue for testing mylyn github connector2",
+				issue.getTitle());
+		assertEquals("2010/02/04 21:09:37 -0800", issue.getUpdatedAt());
 		assertNull(issue.getClosedAt());
-		assertEquals("dgreen99",issue.getUser());
-		assertEquals("open",issue.getState());
+		assertEquals("dgreen99", issue.getUser());
+		assertEquals("open", issue.getState());
 		assertTrue(issue.getLabels().isEmpty());
-		assertTrue(issue.getComments()== 5);
+		assertTrue(issue.getComments() == 5);
 	}
 
-	private String getResource(String resource) {
+	private String getResource(String resource) throws IOException {
+
+		InputStream stream = null;
 		try {
-			InputStream stream = MarshalingTest.class
-					.getResourceAsStream(resource);
-			try {
-				StringWriter writer = new StringWriter();
-				Reader reader = new InputStreamReader(stream);
-				int c;
-				while ((c = reader.read()) != -1) {
-					writer.write(c);
-				}
-				return writer.toString();
-			} finally {
+			stream = MarshalingTest.class.getResourceAsStream(resource);
+			StringWriter writer = new StringWriter();
+			Reader reader = new InputStreamReader(stream);
+			int c;
+			while ((c = reader.read()) != -1) {
+				writer.write(c);
+			}
+			return writer.toString();
+		} finally {
+			if (stream != null) {
 				stream.close();
 			}
-		} catch (Throwable t) {
-			throw new IllegalStateException(t);
 		}
+
 	}
 }

@@ -56,7 +56,7 @@ public class GitHubServiceException extends Exception {
 	/**
 	 * the HTTP status code, or -1 if unknown or not applicable.
 	 */
-	public int getHttpStatusCode() {
+	public final int getHttpStatusCode() {
 		return httpStatusCode;
 	}
 }

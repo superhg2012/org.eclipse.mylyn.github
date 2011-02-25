@@ -29,7 +29,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskOperation;
  * 
  * @author Christian Trutz
  */
-public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
+public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	private static final String DATA_VERSION = "1";
 
@@ -37,22 +37,38 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	private final GitHubRepositoryConnector connector;
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
 
-	private DateFormat githubDateFormat = new SimpleDateFormat(
+	private static final DateFormat githubDateFormat = new SimpleDateFormat(
 			"yyyy/mm/dd HH:MM:ss Z");
 
+	/**
+	 * Create a new data handler instance.
+	 * 
+	 * @param connector
+	 *            - repository connector instance
+	 */
 	public GitHubTaskDataHandler(GitHubRepositoryConnector connector) {
 		this.connector = connector;
 	}
 
+	/**
+	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#getAttributeMapper(org.eclipse.mylyn.tasks.core.TaskRepository)
+	 */
 	@Override
 	public final TaskAttributeMapper getAttributeMapper(
 			TaskRepository taskRepository) {
-		if (this.taskAttributeMapper == null)
+		if (this.taskAttributeMapper == null) {
 			this.taskAttributeMapper = new GitHubTaskAttributeMapper(
 					taskRepository);
+		}
 		return this.taskAttributeMapper;
 	}
 
+	/**
+	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#initializeTaskData(org.eclipse.mylyn.tasks.core.TaskRepository,
+	 *      org.eclipse.mylyn.tasks.core.data.TaskData,
+	 *      org.eclipse.mylyn.tasks.core.ITaskMapping,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public final boolean initializeTaskData(TaskRepository repository,
 			TaskData data, ITaskMapping initializationData,
@@ -69,6 +85,13 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		return true;
 	}
 
+	/**
+	 * Post a task data.
+	 * 
+	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#postTaskData(org.eclipse.mylyn.tasks.core.TaskRepository,
+	 *      org.eclipse.mylyn.tasks.core.data.TaskData, java.util.Set,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public final RepositoryResponse postTaskData(TaskRepository repository,
 			TaskData taskData, Set<TaskAttribute> oldAttributes,
@@ -83,7 +106,7 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			GitHubCredentials credentials = GitHubCredentials
 					.create(repository);
 			if (taskData.isNew()) {
-				issue = service.openIssue(user, repo, issue, credentials);
+				issue = service.openIssueForView(user, repo, issue, credentials);
 			} else {
 				TaskAttribute operationAttribute = taskData.getRoot()
 						.getAttribute(TaskAttribute.OPERATION);
@@ -96,7 +119,7 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 				}
 				if (operation != null && operation != GitHubTaskOperation.LEAVE) {
-					service.editIssue(user, repo, issue, credentials);
+					service.openIssueForEdit(user, repo, issue, credentials);
 					switch (operation) {
 					case REOPEN:
 						service.reopenIssue(user, repo, issue, credentials);
@@ -109,7 +132,7 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 								+ operation);
 					}
 				} else {
-					service.editIssue(user, repo, issue, credentials);
+					service.openIssueForEdit(user, repo, issue, credentials);
 				}
 			}
 			return new RepositoryResponse(
@@ -121,6 +144,21 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	}
 
+	/**
+	 * Create a partial task
+	 * 
+	 * @param repository
+	 *            - repository instance
+	 * @param monitor
+	 *            - monitor object
+	 * @param user
+	 *            - user
+	 * @param project
+	 *            - project
+	 * @param issue
+	 *            - issue instance
+	 * @return a new task data.
+	 */
 	public final TaskData createPartialTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
 			GitHubIssue issue) {
@@ -183,15 +221,12 @@ public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		TaskAttribute operationAttribute = data.getRoot().createAttribute(
 				TaskAttribute.OPERATION);
 		operationAttribute.getMetaData().setType(TaskAttribute.TYPE_OPERATION);
-
-		if (!data.isNew()) {
-			if (issue.getState() != null) {
-				addOperation(data, issue, GitHubTaskOperation.LEAVE, true);
-				if (issue.getState().equals("open")) {
-					addOperation(data, issue, GitHubTaskOperation.CLOSE, false);
-				} else if (issue.getState().equals("closed")) {
-					addOperation(data, issue, GitHubTaskOperation.REOPEN, false);
-				}
+		if (!data.isNew() && issue.getState() != null) {
+			addOperation(data, issue, GitHubTaskOperation.LEAVE, true);
+			if (issue.getState().equals("open")) {
+				addOperation(data, issue, GitHubTaskOperation.CLOSE, false);
+			} else if (issue.getState().equals("closed")) {
+				addOperation(data, issue, GitHubTaskOperation.REOPEN, false);
 			}
 		}
 	}

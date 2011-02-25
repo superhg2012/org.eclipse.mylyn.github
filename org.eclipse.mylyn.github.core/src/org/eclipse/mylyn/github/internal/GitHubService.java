@@ -88,7 +88,9 @@ public class GitHubService {
 			LOG.error("Invalid credentials.", e);
 			return false;
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 		return success;
 	}
@@ -135,7 +137,9 @@ public class GitHubService {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 		return issues;
 	}
@@ -180,7 +184,9 @@ public class GitHubService {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 		return success;
 	}
@@ -222,7 +228,9 @@ public class GitHubService {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 		return success;
 	}
@@ -244,42 +252,15 @@ public class GitHubService {
 	 *             API Doc: issues/open/:user/:repo API POST Variables: login,
 	 *             api-token, title, body
 	 */
-	public final GitHubIssue openIssue(final String user, final String repo,
-			final GitHubIssue issue, final GitHubCredentials credentials)
-			throws GitHubServiceException {
+	public final GitHubIssue openIssueForView(final String user,
+			final String repo, final GitHubIssue issue,
+			final GitHubCredentials credentials) throws GitHubServiceException {
 
-		GitHubShowIssue showIssue = null;
-
-		PostMethod method = null;
-		try {
-			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + OPEN
-					+ user + "/" + repo);
-			method.setRequestBody(createRequestBody(issue, credentials));
-			method.addRequestHeader("Content-type",
-					"application/x-www-form-urlencoded; charset=UTF-8");
-			executeMethod(method);
-			showIssue = gson.fromJson(new String(method.getResponseBody()),
-					GitHubShowIssue.class);
-			if (showIssue == null || showIssue.getIssue() == null) {
-				if (LOG.isErrorEnabled()) {
-					LOG.error("Unexpected server response: "
-							+ method.getResponseBodyAsString());
-				}
-				throw new GitHubServiceException("Unexpected server response");
-			}
-			return showIssue.getIssue();
-		} catch (JsonSyntaxException e) {
-			throw new GitHubServiceException(
-					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
-		} catch (IOException e) {
-			throw new GitHubServiceException(
-					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
-		} finally {
-			method.releaseConnection();
-		}
+		StringBuilder uri = new StringBuilder(API_URL_BASE)
+				.append(API_ISSUES_ROOT).append(OPEN).append(user).append("/")
+				.append(repo);
+		return openIssue(uri.toString(), issue, credentials);
 	}
-
-	
 
 	/**
 	 * Edit an existing issue using the GitHub Issues API.
@@ -298,13 +279,20 @@ public class GitHubService {
 	 *             API Doc: issues/edit/:user/:repo/:number API POST Variables:
 	 *             login, api-token, title, body
 	 */
-	public final GitHubIssue editIssue(final String user, final String repo,
-			final GitHubIssue issue, final GitHubCredentials credentials)
-			throws GitHubServiceException {
+	public final GitHubIssue openIssueForEdit(final String user,
+			final String repo, final GitHubIssue issue,
+			final GitHubCredentials credentials) throws GitHubServiceException {
+		StringBuilder uri = new StringBuilder(API_URL_BASE)
+				.append(API_ISSUES_ROOT).append(EDIT).append(user).append("/")
+				.append(repo).append("/").append(issue.getNumber());
+		return openIssue(uri.toString(), issue, credentials);
+	}
+
+	private GitHubIssue openIssue(final String uri, final GitHubIssue issue,
+			final GitHubCredentials credentials) throws GitHubServiceException {
 		PostMethod method = null;
 		try {
-			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EDIT
-					+ user + "/" + repo + "/" + issue.getNumber());
+			method = new PostMethod(uri);
 			method.setRequestBody(createRequestBody(issue, credentials));
 			method.addRequestHeader("Content-type",
 					"application/x-www-form-urlencoded; charset=UTF-8");
@@ -365,7 +353,9 @@ public class GitHubService {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 	}
 
@@ -390,8 +380,9 @@ public class GitHubService {
 	public final GitHubIssue reopenIssue(String user, String repo,
 			GitHubIssue issue, GitHubCredentials credentials)
 			throws GitHubServiceException {
-		issue = editIssue(user, repo, issue, credentials);
-		return changeIssueStatus(user, repo, REOPEN, issue, credentials);
+		GitHubIssue editedIssue = openIssueForEdit(user, repo, issue,
+				credentials);
+		return changeIssueStatus(user, repo, REOPEN, editedIssue, credentials);
 	}
 
 	/**
@@ -415,8 +406,9 @@ public class GitHubService {
 	public final GitHubIssue closeIssue(String user, String repo,
 			GitHubIssue issue, GitHubCredentials credentials)
 			throws GitHubServiceException {
-		issue = editIssue(user, repo, issue, credentials);
-		return changeIssueStatus(user, repo, CLOSE, issue, credentials);
+		GitHubIssue editedIssue = openIssueForEdit(user, repo, issue,
+				credentials);
+		return changeIssueStatus(user, repo, CLOSE, editedIssue, credentials);
 
 	}
 
@@ -447,7 +439,9 @@ public class GitHubService {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
-			method.releaseConnection();
+			if (method != null) {
+				method.releaseConnection();
+			}
 		}
 	}
 
@@ -478,18 +472,16 @@ public class GitHubService {
 				credentials.getApiToken());
 		return new NameValuePair[] { login, token };
 	}
-	
+
 	private NameValuePair[] createRequestBody(final GitHubIssue issue,
 			final GitHubCredentials credentials) {
 		final NameValuePair login = new NameValuePair("login",
 				credentials.getUsername());
 		final NameValuePair token = new NameValuePair("token",
 				credentials.getApiToken());
-		final NameValuePair body = new NameValuePair("body",
-				issue.getBody());
-		final NameValuePair title = new NameValuePair("title",
-				issue.getTitle());
-		return  new NameValuePair[] { login, token, body, title };
-		
+		final NameValuePair body = new NameValuePair("body", issue.getBody());
+		final NameValuePair title = new NameValuePair("title", issue.getTitle());
+		return new NameValuePair[] { login, token, body, title };
+
 	}
 }

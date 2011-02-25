@@ -39,8 +39,6 @@ public class GitHubServiceTest {
 
 	String TEST_USER = "eclipse-github-plugin";
 
-	String TEST_PASS = "plugin";
-
 	String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
 
 	/**
@@ -64,7 +62,7 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = service.openIssue(TEST_USER, TEST_PROJECT, issue,
+		GitHubIssue newIssue = service.openIssueForView(TEST_USER, TEST_PROJECT, issue,
 				new GitHubCredentials(TEST_USER,API_KEY));
 		assertTrue(newIssue != null);
 		assertEquals(issue.getUser(),newIssue.getUser());
@@ -82,14 +80,14 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = service.openIssue(TEST_USER, TEST_PROJECT, issue,
+		GitHubIssue newIssue = service.openIssueForView(TEST_USER, TEST_PROJECT, issue,
 				new GitHubCredentials(TEST_USER,API_KEY));
 		assertTrue(newIssue != null);
 		
 		newIssue.setTitle(newIssue.getTitle()+" - modified");
 		newIssue.setBody(newIssue.getBody()+" - modified");
 		
-		service.editIssue(TEST_USER, TEST_PROJECT, newIssue, new GitHubCredentials(TEST_USER,API_KEY));
+		service.openIssueForEdit(TEST_USER, TEST_PROJECT, newIssue, new GitHubCredentials(TEST_USER,API_KEY));
 		
 		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT, newIssue.getNumber());
 		
