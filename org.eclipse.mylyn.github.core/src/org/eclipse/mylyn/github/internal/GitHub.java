@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHub {
+public final class GitHub {
 
 	private GitHub() {
 

@@ -30,7 +30,7 @@ public class GitHubIssues {
 	 * 
 	 * @return The array of individual GitHub Issues
 	 */
-	public GitHubIssue[] getIssues() {
+	public final GitHubIssue[] getIssues() {
 		return Arrays.copyOf(issues, issues.length);
 	}
 

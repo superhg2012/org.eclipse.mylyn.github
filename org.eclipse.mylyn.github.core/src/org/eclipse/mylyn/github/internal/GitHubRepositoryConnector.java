@@ -66,7 +66,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * @return always {@code true}
 	 */
 	@Override
-	public boolean canCreateNewTask(TaskRepository repository) {
+	public final boolean canCreateNewTask(TaskRepository repository) {
 		return true;
 	}
 

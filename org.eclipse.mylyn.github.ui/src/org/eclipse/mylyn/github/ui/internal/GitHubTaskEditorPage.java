@@ -56,6 +56,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		while (descriptorIt.hasNext()) {
 			TaskEditorPartDescriptor partDescriptor = descriptorIt.next();
 			if (partDescriptor.getId().equals(ID_PART_ATTRIBUTES)) {
+				
 				// descriptorIt.remove();
 			} else if (partDescriptor.getId().equals(ID_PART_COMMENTS)) {
 				// currently the API doesn't support reading existing comments,

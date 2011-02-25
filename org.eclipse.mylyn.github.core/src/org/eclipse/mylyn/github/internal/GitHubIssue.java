@@ -89,7 +89,7 @@ public class GitHubIssue {
 	 * 
 	 * @return The string representation of the issue number.
 	 */
-	public String getNumber() {
+	public final String getNumber() {
 		return number;
 	}
 
@@ -99,7 +99,7 @@ public class GitHubIssue {
 	 * @param number
 	 *            - String representation of the number to set to.
 	 */
-	public void setNumber(final String number) {
+	public final void setNumber(final String number) {
 		this.number = number;
 	}
 
@@ -108,7 +108,7 @@ public class GitHubIssue {
 	 * 
 	 * @return The user name of the person who created the issue
 	 */
-	public String getUser() {
+	public final String getUser() {
 		return user;
 	}
 
@@ -118,7 +118,7 @@ public class GitHubIssue {
 	 * @param user
 	 *            - The user name to set the issue creator to.
 	 */
-	public void setUser(final String user) {
+	public final void setUser(final String user) {
 		this.user = user;
 	}
 
@@ -127,14 +127,14 @@ public class GitHubIssue {
 	 * 
 	 * @return The title text of this issue
 	 */
-	public String getTitle() {
+	public final String getTitle() {
 		return title;
 	}
 
 	/**
 	 * @param title
 	 */
-	public void setTitle(final String title) {
+	public final void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -143,7 +143,7 @@ public class GitHubIssue {
 	 * 
 	 * @return The text body of the issue
 	 */
-	public String getBody() {
+	public final String getBody() {
 		return body;
 	}
 
@@ -153,55 +153,55 @@ public class GitHubIssue {
 	 * @param body
 	 *            - The text body to set for this issue
 	 */
-	public void setBody(final String body) {
+	public final void setBody(final String body) {
 		this.body = body;
 	}
 
-	public String getState() {
+	public final String getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public final void setState(String state) {
 		this.state = state;
 	}
 
-	public String getCreatedAt() {
+	public final String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(String createdAt) {
+	public final void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getUpdatedAt() {
+	public final String getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(String updatedAt) {
+	public final void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getClosedAt() {
+	public final String getClosedAt() {
 		return closedAt;
 	}
 
-	public void setClosedAt(String closedAt) {
+	public final void setClosedAt(String closedAt) {
 		this.closedAt = closedAt;
 	}
 
-	public void setComments(Integer comments) {
+	public final void setComments(Integer comments) {
 		this.comments = comments;
 	}
 
-	public Integer getComments() {
+	public final Integer getComments() {
 		return comments;
 	}
 
-	public void setLabels(List<String> labels) {
+	public final void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
 
-	public List<String> getLabels() {
+	public final List<String> getLabels() {
 		return labels;
 	}
 }

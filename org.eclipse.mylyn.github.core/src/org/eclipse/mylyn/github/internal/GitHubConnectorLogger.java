@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.Status;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHubConnectorLogger {
+public final class GitHubConnectorLogger {
 
 	private GitHubConnectorLogger() {
 
