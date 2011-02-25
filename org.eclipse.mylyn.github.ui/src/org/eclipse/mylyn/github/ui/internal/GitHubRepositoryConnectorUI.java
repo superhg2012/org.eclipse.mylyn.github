@@ -36,7 +36,6 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
 import org.eclipse.mylyn.tasks.ui.TaskHyperlink;
 import org.eclipse.mylyn.tasks.ui.TasksUi;
-import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
@@ -58,7 +57,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 * @return the unique type of the repository: "github"
 	 */
 	@Override
-	public String getConnectorKind() {
+	public final String getConnectorKind() {
 		return GitHub.CONNECTOR_KIND;
 	}
 
@@ -69,7 +68,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 *         parameter like user name, password, ...
 	 */
 	@Override
-	public ITaskRepositoryPage getSettingsPage(
+	public final ITaskRepositoryPage getSettingsPage(
 			final TaskRepository taskRepository) {
 		return new GitHubRepositorySettingsPage(taskRepository);
 	}
@@ -80,7 +79,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 * @return {@link NewTaskWizard} with GitHub specific tab
 	 */
 	@Override
-	public IWizard getNewTaskWizard(final TaskRepository taskRepository,
+	public final IWizard getNewTaskWizard(final TaskRepository taskRepository,
 			final ITaskMapping taskSelection) {
 		return new NewTaskWizard(taskRepository, taskSelection);
 	}
@@ -91,7 +90,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 * @return {@code true}
 	 */
 	@Override
-	public boolean hasSearchPage() {
+	public final boolean hasSearchPage() {
 		return true;
 	}
 
@@ -103,7 +102,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 * @return {@link RepositoryQueryWizard} with GitHub specific query page
 	 */
 	@Override
-	public IWizard getQueryWizard(final TaskRepository taskRepository,
+	public final IWizard getQueryWizard(final TaskRepository taskRepository,
 			final IRepositoryQuery queryToEdit) {
 		RepositoryQueryWizard wizard = new RepositoryQueryWizard(taskRepository);
 		GitHubRepositoryQueryPage queryPage = new GitHubRepositoryQueryPage(
@@ -112,7 +111,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 		return wizard;
 	}
 
-	public IHyperlink[] findHyperlinks(TaskRepository repository, String text,
+	public final IHyperlink[] findHyperlinks(TaskRepository repository, String text,
 			int index, int textOffset) {
 		List<IHyperlink> hyperlinks = new ArrayList<IHyperlink>();
 
@@ -125,7 +124,6 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 				String taskId = matcher.group(3);
 
 				if (project == null && user != null) {
-					// same project name, different user
 					String url = repository.getUrl();
 					project = buildTaskRepositoryProject(url);
 				}
