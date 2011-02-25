@@ -13,7 +13,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
  * 
  * @author Christian Trutz
  */
-public class GitHubTaskAttributeMapper extends TaskAttributeMapper {
+public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
 	

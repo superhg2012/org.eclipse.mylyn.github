@@ -29,10 +29,10 @@ import org.eclipse.mylyn.tasks.core.data.TaskOperation;
  * 
  * @author Christian Trutz
  */
-public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
+public final class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	private static final String DATA_VERSION = "1";
-	
+
 	private GitHubTaskAttributeMapper taskAttributeMapper = null;
 	private final GitHubRepositoryConnector connector;
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
@@ -45,7 +45,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	@Override
-	public TaskAttributeMapper getAttributeMapper(TaskRepository taskRepository) {
+	public final TaskAttributeMapper getAttributeMapper(
+			TaskRepository taskRepository) {
 		if (this.taskAttributeMapper == null)
 			this.taskAttributeMapper = new GitHubTaskAttributeMapper(
 					taskRepository);
@@ -53,9 +54,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	@Override
-	public boolean initializeTaskData(TaskRepository repository, TaskData data,
-			ITaskMapping initializationData, IProgressMonitor monitor)
-			throws CoreException {
+	public final boolean initializeTaskData(TaskRepository repository,
+			TaskData data, ITaskMapping initializationData,
+			IProgressMonitor monitor) throws CoreException {
 
 		data.setVersion(DATA_VERSION);
 
@@ -69,7 +70,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	@Override
-	public RepositoryResponse postTaskData(TaskRepository repository,
+	public final RepositoryResponse postTaskData(TaskRepository repository,
 			TaskData taskData, Set<TaskAttribute> oldAttributes,
 			IProgressMonitor monitor) throws CoreException {
 
@@ -120,7 +121,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	}
 
-	public TaskData createPartialTaskData(TaskRepository repository,
+	public final TaskData createPartialTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
 			GitHubIssue issue) {
 
@@ -216,16 +217,17 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	private String toLocalDate(String date) {
+		String localDate = date;
 		if (date != null && date.trim().length() > 0) {
 			// expect "2010/02/02 22:58:39 -0800"
 			try {
 				Date d = githubDateFormat.parse(date);
-				date = dateFormat.format(d);
+				localDate = dateFormat.format(d);
 			} catch (ParseException e) {
 				// ignore
 			}
 		}
-		return date;
+		return localDate;
 	}
 
 	private String toGitHubDate(TaskData taskData, GitHubTaskAttributes attr) {

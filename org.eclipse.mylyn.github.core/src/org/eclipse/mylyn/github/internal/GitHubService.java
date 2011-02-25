@@ -49,6 +49,10 @@ import com.google.gson.JsonSyntaxException;
  */
 public class GitHubService {
 
+	private static final String FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE = "Failed to deserialize json object.";
+
+	private static final String FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE = "Failed to read response body.";
+
 	private static final Log LOG = LogFactory.getLog(GitHubService.class);
 
 	private final HttpClient httpClient;
@@ -125,9 +129,11 @@ public class GitHubService {
 			issues = gson.fromJson(new String(method.getResponseBody()),
 					GitHubIssues.class);
 		} catch (JsonSyntaxException e) {
-			throw new GitHubServiceException("Failed to deserialize object.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -171,7 +177,8 @@ public class GitHubService {
 				success = true;
 			}
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -212,7 +219,8 @@ public class GitHubService {
 				success = true;
 			}
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -246,16 +254,7 @@ public class GitHubService {
 		try {
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + OPEN
 					+ user + "/" + repo);
-			final NameValuePair login = new NameValuePair("login",
-					credentials.getUsername());
-			final NameValuePair token = new NameValuePair("token",
-					credentials.getApiToken());
-			final NameValuePair body = new NameValuePair("body",
-					issue.getBody());
-			final NameValuePair title = new NameValuePair("title",
-					issue.getTitle());
-			method.setRequestBody(new NameValuePair[] { login, token, body,
-					title });
+			method.setRequestBody(createRequestBody(issue, credentials));
 			method.addRequestHeader("Content-type",
 					"application/x-www-form-urlencoded; charset=UTF-8");
 			executeMethod(method);
@@ -271,13 +270,16 @@ public class GitHubService {
 			return showIssue.getIssue();
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
-					"Failed to deserialize json object.", e);
+					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
 	}
+
+	
 
 	/**
 	 * Edit an existing issue using the GitHub Issues API.
@@ -303,16 +305,7 @@ public class GitHubService {
 		try {
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EDIT
 					+ user + "/" + repo + "/" + issue.getNumber());
-			final NameValuePair login = new NameValuePair("login",
-					credentials.getUsername());
-			final NameValuePair token = new NameValuePair("token",
-					credentials.getApiToken());
-			final NameValuePair body = new NameValuePair("body",
-					issue.getBody());
-			final NameValuePair title = new NameValuePair("title",
-					issue.getTitle());
-			method.setRequestBody(new NameValuePair[] { login, token, body,
-					title });
+			method.setRequestBody(createRequestBody(issue, credentials));
 			method.addRequestHeader("Content-type",
 					"application/x-www-form-urlencoded; charset=UTF-8");
 			executeMethod(method);
@@ -328,9 +321,10 @@ public class GitHubService {
 			return showIssue.getIssue();
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
-					"Failed to deserialize json object.", e);
+					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			if (method != null) {
 				method.releaseConnection();
@@ -359,18 +353,17 @@ public class GitHubService {
 		try {
 			method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SHOW + user
 					+ "/" + repo + "/" + issueNumber);
-
 			executeMethod(method);
 			GitHubShowIssue issue = gson
 					.fromJson(new String(method.getResponseBody()),
 							GitHubShowIssue.class);
-
 			return issue.getIssue();
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
-					"Failed to deserialize json object.", e);
+					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -394,8 +387,9 @@ public class GitHubService {
 	 *             API Doc: issues/reopen/:user/:repo/:number API POST
 	 *             Variables: login, api-token, title, body
 	 */
-	public GitHubIssue reopenIssue(String user, String repo, GitHubIssue issue,
-			GitHubCredentials credentials) throws GitHubServiceException {
+	public final GitHubIssue reopenIssue(String user, String repo,
+			GitHubIssue issue, GitHubCredentials credentials)
+			throws GitHubServiceException {
 		issue = editIssue(user, repo, issue, credentials);
 		return changeIssueStatus(user, repo, REOPEN, issue, credentials);
 	}
@@ -418,8 +412,9 @@ public class GitHubService {
 	 *             API Doc: issues/close/:user/:repo/:number API POST Variables:
 	 *             login, api-token, title, body
 	 */
-	public GitHubIssue closeIssue(String user, String repo, GitHubIssue issue,
-			GitHubCredentials credentials) throws GitHubServiceException {
+	public final GitHubIssue closeIssue(String user, String repo,
+			GitHubIssue issue, GitHubCredentials credentials)
+			throws GitHubServiceException {
 		issue = editIssue(user, repo, issue, credentials);
 		return changeIssueStatus(user, repo, CLOSE, issue, credentials);
 
@@ -447,9 +442,10 @@ public class GitHubService {
 			return showIssue.getIssue();
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
-					"Failed to deserialize json object.", e);
+					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
 		} catch (IOException e) {
-			throw new GitHubServiceException("Failed to read response body.", e);
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
 		} finally {
 			method.releaseConnection();
 		}
@@ -481,5 +477,19 @@ public class GitHubService {
 		final NameValuePair token = new NameValuePair("token",
 				credentials.getApiToken());
 		return new NameValuePair[] { login, token };
+	}
+	
+	private NameValuePair[] createRequestBody(final GitHubIssue issue,
+			final GitHubCredentials credentials) {
+		final NameValuePair login = new NameValuePair("login",
+				credentials.getUsername());
+		final NameValuePair token = new NameValuePair("token",
+				credentials.getApiToken());
+		final NameValuePair body = new NameValuePair("body",
+				issue.getBody());
+		final NameValuePair title = new NameValuePair("title",
+				issue.getTitle());
+		return  new NameValuePair[] { login, token, body, title };
+		
 	}
 }
