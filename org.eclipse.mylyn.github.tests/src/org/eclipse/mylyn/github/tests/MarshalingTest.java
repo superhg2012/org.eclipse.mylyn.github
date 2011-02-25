@@ -29,7 +29,7 @@ public class MarshalingTest {
 	private Gson gson;
 
 	@Before
-	public void beforeTest() {
+	public final void beforeTest() {
 		gson = new Gson();
 	}
 

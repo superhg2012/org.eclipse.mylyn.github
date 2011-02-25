@@ -23,6 +23,7 @@ import org.eclipse.mylyn.github.internal.GitHubCredentials;
 import org.eclipse.mylyn.github.internal.GitHubIssue;
 import org.eclipse.mylyn.github.internal.GitHubIssues;
 import org.eclipse.mylyn.github.internal.GitHubService;
+import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -35,17 +36,18 @@ import org.junit.runners.JUnit4;
 public class GitHubServiceTest {
 
 	// GitHub API key for user "eclipse-github-plugin"
-	String API_KEY = "8b35af675fcdca9d254ae7a6ad4d0be8";
+	private static final String API_KEY = "8b35af675fcdca9d254ae7a6ad4d0be8";
 
-	String TEST_USER = "eclipse-github-plugin";
+	private static final String TEST_USER = "eclipse-github-plugin";
 
-	String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
+	private static final String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
 
 	/**
 	 * Test the GitHubService issue searching implementation
+	 * @throws GitHubServiceException 
 	 */
 	@Test
-	public final void searchIssues() throws Exception {
+	public final void searchIssues() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
 				TEST_PROJECT, "open", "test");
@@ -54,9 +56,10 @@ public class GitHubServiceTest {
 
 	/**
 	 * Test the GitHubService implementation for opening a new issue.
+	 * @throws GitHubServiceException 
 	 */
 	@Test
-	public final void openIssue() throws Exception {
+	public final void openIssue() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
@@ -72,9 +75,10 @@ public class GitHubServiceTest {
 	}
 	/**
 	 * Test the GitHubService implementation for opening a new issue.
+	 * @throws GitHubServiceException 
 	 */
 	@Test
-	public final void editIssue() throws Exception {
+	public final void editIssue() throws GitHubServiceException  {
 		final GitHubService service = new GitHubService();
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
@@ -100,9 +104,10 @@ public class GitHubServiceTest {
 	/**
 	 * Test the GitHubService implementation for adding a label to an existing
 	 * issue.
+	 * @throws GitHubServiceException 
 	 */
 	@Test
-	public final void addLabel() throws Exception {
+	public final void addLabel() throws GitHubServiceException  {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
 				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
@@ -112,9 +117,10 @@ public class GitHubServiceTest {
 	/**
 	 * Test the GitHubService implementation for removing an existing label from
 	 * any GitHub issue.
+	 * @throws GitHubServiceException 
 	 */
 	@Test
-	public final void removeLable() throws Exception {
+	public final void removeLable() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
 				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));

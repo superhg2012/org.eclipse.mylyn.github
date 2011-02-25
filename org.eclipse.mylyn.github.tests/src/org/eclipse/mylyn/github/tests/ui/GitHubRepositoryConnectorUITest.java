@@ -15,29 +15,32 @@ import org.junit.Test;
 @SuppressWarnings("restriction")
 public class GitHubRepositoryConnectorUITest {
 
+	private static final int REGION_LENGTH = 2;
+	private static final int HYPERLIK_REGION_OFFSET = 8;
+	private static final int OFFSET = 4;
 	private GitHubRepositoryConnectorUI connectorUI;
 	private TaskRepository repository;
 
 	@Before
-	public void before() {
+	public final void before() {
 		connectorUI = new GitHubRepositoryConnectorUI();
 		repository = new TaskRepository(GitHub.CONNECTOR_KIND,
 				GitHubRepositoryUrlBuilder.buildGitHubUrl("foo", "bar"));
 	}
 
 	@Test
-	public void testFindHyperlinksTaskRepositoryStringIntInt() {
+	public final void testFindHyperlinksTaskRepositoryStringIntInt() {
 		IHyperlink[] hyperlinks = connectorUI.findHyperlinks(repository,
 				"one #2 three", -1, 0);
 		assertNotNull(hyperlinks);
 		assertEquals(1, hyperlinks.length);
-		assertEquals(new Region(4, 2), hyperlinks[0].getHyperlinkRegion());
+		assertEquals(new Region(OFFSET, REGION_LENGTH), hyperlinks[0].getHyperlinkRegion());
 
 		hyperlinks = connectorUI.findHyperlinks(repository, "one #2 three", -1,
-				4);
+				OFFSET);
 		assertNotNull(hyperlinks);
 		assertEquals(1, hyperlinks.length);
-		assertEquals(new Region(8, 2), hyperlinks[0].getHyperlinkRegion());
+		assertEquals(new Region(HYPERLIK_REGION_OFFSET, REGION_LENGTH), hyperlinks[0].getHyperlinkRegion());
 	}
 
 }
