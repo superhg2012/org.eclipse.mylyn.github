@@ -126,28 +126,21 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		try {
 			String user = buildTaskRepositoryUser(repository.getUrl());
 			String project = buildTaskRepositoryProject(repository.getUrl());
-
-			// perform query
-
 			for (String status : statuses) {
 				GitHubIssues issues = service
 						.searchIssues(user, project, status,
 								query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE));
-
-				// collect task data
 				for (GitHubIssue issue : issues.getIssues()) {
-					TaskData taskData = taskDataHandler.createPartialTaskData(
-							repository, monitor, user, project, issue);
+					TaskData taskData = taskDataHandler.createTaskData(
+							repository, monitor, user, project, issue, true);
 					collector.accept(taskData);
 				}
 				monitor.worked(1);
 			}
-
 			result = Status.OK_STATUS;
 		} catch (GitHubServiceException e) {
 			result = createErrorStatus(e);
 		}
-
 		monitor.done();
 		return result;
 	}
@@ -162,7 +155,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		try {
 			GitHubIssue issue = service.showIssue(user, project, taskId);
 			TaskData taskData = taskDataHandler.createTaskData(repository,
-					monitor, user, project, issue);
+					monitor, user, project, issue, false);
 
 			return taskData;
 		} catch (GitHubServiceException e) {

@@ -37,7 +37,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	private final GitHubRepositoryConnector connector;
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
 
-	private static final DateFormat githubDateFormat = new SimpleDateFormat(
+	private final DateFormat githubDateFormat = new SimpleDateFormat(
 			"yyyy/mm/dd HH:MM:ss Z");
 
 	/**
@@ -159,9 +159,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	 *            - issue instance
 	 * @return a new task data.
 	 */
-	public final TaskData createPartialTaskData(TaskRepository repository,
+	public final TaskData createTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
-			GitHubIssue issue) {
+			GitHubIssue issue, boolean isPartialData) {
 
 		TaskData data = new TaskData(getAttributeMapper(repository),
 				GitHub.CONNECTOR_KIND, repository.getRepositoryUrl(),
@@ -184,7 +184,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 				issue.getLabels());
 
 		if (isPartial(data)) {
-			data.setPartial(true);
+			data.setPartial(isPartialData);
 		}
 
 		return data;
@@ -277,16 +277,6 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			}
 		}
 		return value;
-	}
-
-	public TaskData createTaskData(TaskRepository repository,
-			IProgressMonitor monitor, String user, String project,
-			GitHubIssue issue) {
-		TaskData taskData = createPartialTaskData(repository, monitor, user,
-				project, issue);
-		taskData.setPartial(false);
-
-		return taskData;
 	}
 
 	private GitHubIssue createIssue(TaskData taskData) {
