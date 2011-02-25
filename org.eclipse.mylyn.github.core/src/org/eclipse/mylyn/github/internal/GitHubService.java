@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Facility to perform API operations on a GitHub issue tracker.
@@ -55,11 +56,7 @@ public class GitHubService {
 	private final Gson gson;
 
 	/**
-	 * Helper class, describing all of the possible GitHub API actions.
-	 */
-
-	/**
-	 * Constructor, create the client and JSON/Java interface object.
+	 * Create the client and JSON/Java interface object.
 	 */
 	public GitHubService() {
 		httpClient = new HttpClient();
@@ -70,6 +67,7 @@ public class GitHubService {
 	 * Verify that the provided credentials are correct
 	 * 
 	 * @param credentials
+	 *            - user credentials
 	 * 
 	 * @return true if and only if the credentials are correct
 	 */
@@ -81,15 +79,12 @@ public class GitHubService {
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EMAILS);
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-			// if we reach here we know that credentials were good
 			success = true;
 		} catch (PermissionDeniedException e) {
-			// if we provide bad credentials, GitHub will return 403 or 401
+			LOG.error("Invalid credentials.", e);
 			return false;
 		} finally {
-			if (method != null) {
-				method.releaseConnection();
-			}
+			method.releaseConnection();
 		}
 		return success;
 	}
@@ -113,34 +108,28 @@ public class GitHubService {
 	 * 
 	 * @note API Doc: /issues/search/:user/:repo/:state/:search_term
 	 */
-	public GitHubIssues searchIssues(final String user, final String repo,
-			final String state, final String searchTerm)
+	public final GitHubIssues searchIssues(final String user,
+			final String repo, final String state, final String searchTerm)
 			throws GitHubServiceException {
 		GitHubIssues issues = null;
 		GetMethod method = null;
 		try {
-			// build HTTP GET method
-			if (searchTerm.trim().length() == 0) { // no search term: list all
+			if (searchTerm.trim().length() == 0) {
 				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
 						+ user + "/" + repo + "/" + state);
 			} else {
 				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SEARCH
 						+ user + "/" + repo + "/" + state + "/" + searchTerm);
 			}
-			// execute HTTP GET method
 			executeMethod(method);
-			// transform JSON to Java object
 			issues = gson.fromJson(new String(method.getResponseBody()),
 					GitHubIssues.class);
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runtimeException) {
-			throw runtimeException;
-		} catch (final Exception exception) {
-			throw new GitHubServiceException(exception);
+		} catch (JsonSyntaxException e) {
+			throw new GitHubServiceException("Failed to deserialize object.", e);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
-			if (method != null)
-				method.releaseConnection();
+			method.releaseConnection();
 		}
 		return issues;
 	}
@@ -166,39 +155,25 @@ public class GitHubService {
 	 * @note API Doc: issues/label/add/:user/:repo/:label/:number API POST
 	 *       Variables: login, api-token
 	 */
-	public boolean addLabel(final String user, final String repo,
+	public final boolean addLabel(final String user, final String repo,
 			final String label, final int issueNumber,
 			final GitHubCredentials credentials) throws GitHubServiceException {
 		PostMethod method = null;
-
 		boolean success = false;
-
 		try {
-			// build HTTP GET method
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + ADD_LABEL
 					+ user + "/" + repo + "/" + label + "/"
 					+ Integer.toString(issueNumber));
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-			// Check the response, make sure the action was successful
-			final String response = method.getResponseBodyAsString();
+			String response = method.getResponseBodyAsString();
 			if (response.contains(label.subSequence(0, label.length()))) {
 				success = true;
 			}
-
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
-			}
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runtimeException) {
-			throw runtimeException;
-		} catch (final Exception exception) {
-			throw new GitHubServiceException(exception);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
-			if (method != null)
-				method.releaseConnection();
+			method.releaseConnection();
 		}
 		return success;
 	}
@@ -221,7 +196,7 @@ public class GitHubService {
 	 *             API Doc: issues/label/remove/:user/:repo/:label/:number API
 	 *             POST Variables: login, api-token
 	 */
-	public boolean removeLabel(final String user, final String repo,
+	public final boolean removeLabel(final String user, final String repo,
 			final String label, final int issueNumber,
 			final GitHubCredentials credentials) throws GitHubServiceException {
 		PostMethod method = null;
@@ -232,24 +207,14 @@ public class GitHubService {
 					+ Integer.toString(issueNumber));
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-
-			final String response = method.getResponseBodyAsString();
+			String response = method.getResponseBodyAsString();
 			if (!response.contains(label.subSequence(0, label.length()))) {
 				success = true;
 			}
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
-			}
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runtimeException) {
-			throw runtimeException;
-		} catch (final Exception exception) {
-			throw new GitHubServiceException(exception);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
-			if (method != null)
-				method.releaseConnection();
+			method.releaseConnection();
 		}
 		return success;
 	}
@@ -271,7 +236,7 @@ public class GitHubService {
 	 *             API Doc: issues/open/:user/:repo API POST Variables: login,
 	 *             api-token, title, body
 	 */
-	public GitHubIssue openIssue(final String user, final String repo,
+	public final GitHubIssue openIssue(final String user, final String repo,
 			final GitHubIssue issue, final GitHubCredentials credentials)
 			throws GitHubServiceException {
 
@@ -279,10 +244,8 @@ public class GitHubService {
 
 		PostMethod method = null;
 		try {
-			// Create the HTTP POST method
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + OPEN
 					+ user + "/" + repo);
-			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login",
 					credentials.getUsername());
 			final NameValuePair token = new NameValuePair("token",
@@ -291,17 +254,13 @@ public class GitHubService {
 					issue.getBody());
 			final NameValuePair title = new NameValuePair("title",
 					issue.getTitle());
-
 			method.setRequestBody(new NameValuePair[] { login, token, body,
 					title });
-
 			method.addRequestHeader("Content-type",
 					"application/x-www-form-urlencoded; charset=UTF-8");
-
 			executeMethod(method);
 			showIssue = gson.fromJson(new String(method.getResponseBody()),
 					GitHubShowIssue.class);
-
 			if (showIssue == null || showIssue.getIssue() == null) {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("Unexpected server response: "
@@ -309,21 +268,14 @@ public class GitHubService {
 				}
 				throw new GitHubServiceException("Unexpected server response");
 			}
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
-			}
 			return showIssue.getIssue();
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runTimeException) {
-			throw runTimeException;
-		} catch (final Exception e) {
-			throw new GitHubServiceException(e);
+		} catch (JsonSyntaxException e) {
+			throw new GitHubServiceException(
+					"Failed to deserialize json object.", e);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
-			if (method != null) {
-				method.releaseConnection();
-			}
+			method.releaseConnection();
 		}
 	}
 
@@ -344,16 +296,13 @@ public class GitHubService {
 	 *             API Doc: issues/edit/:user/:repo/:number API POST Variables:
 	 *             login, api-token, title, body
 	 */
-	public GitHubIssue editIssue(final String user, final String repo,
+	public final GitHubIssue editIssue(final String user, final String repo,
 			final GitHubIssue issue, final GitHubCredentials credentials)
 			throws GitHubServiceException {
 		PostMethod method = null;
 		try {
-
-			// Create the HTTP POST method
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EDIT
 					+ user + "/" + repo + "/" + issue.getNumber());
-			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login",
 					credentials.getUsername());
 			final NameValuePair token = new NameValuePair("token",
@@ -362,17 +311,13 @@ public class GitHubService {
 					issue.getBody());
 			final NameValuePair title = new NameValuePair("title",
 					issue.getTitle());
-
 			method.setRequestBody(new NameValuePair[] { login, token, body,
 					title });
-
 			method.addRequestHeader("Content-type",
 					"application/x-www-form-urlencoded; charset=UTF-8");
 			executeMethod(method);
 			GitHubShowIssue showIssue = gson.fromJson(
 					method.getResponseBodyAsString(), GitHubShowIssue.class);
-
-			// Make sure the changes were made properly
 			if (showIssue == null || showIssue.getIssue() == null) {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("Unexpected server response: "
@@ -380,16 +325,12 @@ public class GitHubService {
 				}
 				throw new GitHubServiceException("Unexpected server response");
 			}
-
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
-			}
 			return showIssue.getIssue();
-		} catch (final RuntimeException runTimeException) {
-			throw runTimeException;
-		} catch (final Exception e) {
-			throw new GitHubServiceException(e);
+		} catch (JsonSyntaxException e) {
+			throw new GitHubServiceException(
+					"Failed to deserialize json object.", e);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
 			if (method != null) {
 				method.releaseConnection();
@@ -397,52 +338,41 @@ public class GitHubService {
 		}
 	}
 
-	public GitHubIssue showIssue(final String user, final String repo,
+	/**
+	 * <p>
+	 * Get a specified issue.
+	 * </p>
+	 * 
+	 * @param user
+	 *            - username
+	 * @param repo
+	 *            - repository
+	 * @param issueNumber
+	 *            - issue number
+	 * @return
+	 * @throws GitHubServiceException
+	 *             - in case that the get operation is failing
+	 */
+	public final GitHubIssue showIssue(final String user, final String repo,
 			final String issueNumber) throws GitHubServiceException {
 		GetMethod method = null;
 		try {
-			// build HTTP GET method
 			method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SHOW + user
 					+ "/" + repo + "/" + issueNumber);
 
-			// execute HTTP GET method
 			executeMethod(method);
-			// transform JSON to Java object
 			GitHubShowIssue issue = gson
 					.fromJson(new String(method.getResponseBody()),
 							GitHubShowIssue.class);
 
 			return issue.getIssue();
-		} catch (GitHubServiceException e) {
-			throw e;
-		} catch (final RuntimeException runtimeException) {
-			throw runtimeException;
-		} catch (final Exception exception) {
-			throw new GitHubServiceException(exception);
-		} finally {
-			if (method != null) {
-				method.releaseConnection();
-			}
-		}
-	}
-
-	private void executeMethod(HttpMethod method) throws GitHubServiceException {
-		int status;
-		try {
-			status = httpClient.executeMethod(method);
-		} catch (HttpException e) {
-			throw new GitHubServiceException(e);
+		} catch (JsonSyntaxException e) {
+			throw new GitHubServiceException(
+					"Failed to deserialize json object.", e);
 		} catch (IOException e) {
-			throw new GitHubServiceException(e);
-		}
-		if ((status != HttpStatus.SC_OK) && (status != HttpStatus.SC_CREATED)) {
-			switch (status) {
-			case HttpStatus.SC_UNAUTHORIZED:
-			case HttpStatus.SC_FORBIDDEN:
-				throw new PermissionDeniedException(method.getStatusLine());
-			default:
-				throw new GitHubServiceException(method.getStatusLine());
-			}
+			throw new GitHubServiceException("Failed to read response body.", e);
+		} finally {
+			method.releaseConnection();
 		}
 	}
 
@@ -500,8 +430,6 @@ public class GitHubService {
 			final GitHubCredentials credentials) throws GitHubServiceException {
 		PostMethod method = null;
 		try {
-
-			// Create the HTTP POST method
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT
 					+ githubOperation + user + "/" + repo + "/"
 					+ issue.getNumber());
@@ -509,8 +437,6 @@ public class GitHubService {
 			executeMethod(method);
 			GitHubShowIssue showIssue = gson.fromJson(
 					method.getResponseBodyAsString(), GitHubShowIssue.class);
-
-			// Make sure the changes were made properly
 			if (showIssue == null || showIssue.getIssue() == null) {
 				if (LOG.isErrorEnabled()) {
 					LOG.error("Unexpected server response: "
@@ -518,19 +444,33 @@ public class GitHubService {
 				}
 				throw new GitHubServiceException("Unexpected server response");
 			}
-
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
-			}
 			return showIssue.getIssue();
-		} catch (final RuntimeException runTimeException) {
-			throw runTimeException;
-		} catch (final Exception e) {
-			throw new GitHubServiceException(e);
+		} catch (JsonSyntaxException e) {
+			throw new GitHubServiceException(
+					"Failed to deserialize json object.", e);
+		} catch (IOException e) {
+			throw new GitHubServiceException("Failed to read response body.", e);
 		} finally {
-			if (method != null) {
-				method.releaseConnection();
+			method.releaseConnection();
+		}
+	}
+
+	private void executeMethod(HttpMethod method) throws GitHubServiceException {
+		int status;
+		try {
+			status = httpClient.executeMethod(method);
+		} catch (HttpException e) {
+			throw new GitHubServiceException(e);
+		} catch (IOException e) {
+			throw new GitHubServiceException(e);
+		}
+		if ((status != HttpStatus.SC_OK) && (status != HttpStatus.SC_CREATED)) {
+			switch (status) {
+			case HttpStatus.SC_UNAUTHORIZED:
+			case HttpStatus.SC_FORBIDDEN:
+				throw new PermissionDeniedException(method.getStatusLine());
+			default:
+				throw new GitHubServiceException(method.getStatusLine());
 			}
 		}
 	}
