@@ -18,6 +18,7 @@ package org.eclipse.mylyn.github.internal;
 
 import static org.eclipse.mylyn.github.internal.GitHub.API_ISSUES_ROOT;
 import static org.eclipse.mylyn.github.internal.GitHub.API_URL_BASE;
+import static org.eclipse.mylyn.github.internal.GitHub.API_USER_ROOT;
 import static org.eclipse.mylyn.github.internal.GitHub.EMAILS;
 import static org.eclipse.mylyn.github.internal.GitHub.LIST;
 import static org.eclipse.mylyn.github.internal.GitHub.SEARCH;
@@ -80,7 +81,7 @@ public class GitHubService {
 		PostMethod method = null;
 		boolean success = false;
 		try {
-			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + EMAILS);
+			method = new PostMethod(API_URL_BASE + API_USER_ROOT + EMAILS);
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
 			success = true;

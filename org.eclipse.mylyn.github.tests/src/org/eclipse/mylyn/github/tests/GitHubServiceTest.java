@@ -43,8 +43,20 @@ public class GitHubServiceTest {
 	private static final String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
 
 	/**
+	 * Verify GitHub service verify credentioals implementation
+	 * 
+	 * @throws GitHubServiceException
+	 */
+	@Test
+	public final void verifyCredentials() throws GitHubServiceException {
+		GitHubService service = new GitHubService();
+		assertTrue(service.verifyCredentials(new GitHubCredentials(TEST_USER, API_KEY)));
+	}
+
+	/**
 	 * Test the GitHubService issue searching implementation
-	 * @throws GitHubServiceException 
+	 * 
+	 * @throws GitHubServiceException
 	 */
 	@Test
 	public final void searchIssues() throws GitHubServiceException {
@@ -56,7 +68,8 @@ public class GitHubServiceTest {
 
 	/**
 	 * Test the GitHubService implementation for opening a new issue.
-	 * @throws GitHubServiceException 
+	 * 
+	 * @throws GitHubServiceException
 	 */
 	@Test
 	public final void openIssue() throws GitHubServiceException {
@@ -65,65 +78,70 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = service.openIssueForView(TEST_USER, TEST_PROJECT, issue,
-				new GitHubCredentials(TEST_USER,API_KEY));
+		GitHubIssue newIssue = service.openIssueForView(TEST_USER,
+				TEST_PROJECT, issue, new GitHubCredentials(TEST_USER, API_KEY));
 		assertTrue(newIssue != null);
-		assertEquals(issue.getUser(),newIssue.getUser());
-		assertEquals(issue.getBody(),newIssue.getBody());
-		assertEquals(issue.getTitle(),newIssue.getTitle());
-		assertTrue(newIssue.getNumber() != null && newIssue.getNumber().length() > 0);
+		assertEquals(issue.getUser(), newIssue.getUser());
+		assertEquals(issue.getBody(), newIssue.getBody());
+		assertEquals(issue.getTitle(), newIssue.getTitle());
+		assertTrue(newIssue.getNumber() != null
+				&& newIssue.getNumber().length() > 0);
 	}
+
 	/**
 	 * Test the GitHubService implementation for opening a new issue.
-	 * @throws GitHubServiceException 
+	 * 
+	 * @throws GitHubServiceException
 	 */
 	@Test
-	public final void editIssue() throws GitHubServiceException  {
+	public final void editIssue() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = service.openIssueForView(TEST_USER, TEST_PROJECT, issue,
-				new GitHubCredentials(TEST_USER,API_KEY));
+		GitHubIssue newIssue = service.openIssueForView(TEST_USER,
+				TEST_PROJECT, issue, new GitHubCredentials(TEST_USER, API_KEY));
 		assertTrue(newIssue != null);
-		
-		newIssue.setTitle(newIssue.getTitle()+" - modified");
-		newIssue.setBody(newIssue.getBody()+" - modified");
-		
-		service.openIssueForEdit(TEST_USER, TEST_PROJECT, newIssue, new GitHubCredentials(TEST_USER,API_KEY));
-		
-		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT, newIssue.getNumber());
-		
+
+		newIssue.setTitle(newIssue.getTitle() + " - modified");
+		newIssue.setBody(newIssue.getBody() + " - modified");
+
+		service.openIssueForEdit(TEST_USER, TEST_PROJECT, newIssue,
+				new GitHubCredentials(TEST_USER, API_KEY));
+
+		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT,
+				newIssue.getNumber());
+
 		assertTrue(showIssue != null);
-		assertEquals(newIssue.getTitle(),showIssue.getTitle());
+		assertEquals(newIssue.getTitle(), showIssue.getTitle());
 	}
 
-	
-	
 	/**
 	 * Test the GitHubService implementation for adding a label to an existing
 	 * issue.
-	 * @throws GitHubServiceException 
+	 * 
+	 * @throws GitHubServiceException
 	 */
 	@Test
-	public final void addLabel() throws GitHubServiceException  {
+	public final void addLabel() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
+				"lame", 1, new GitHubCredentials(TEST_USER, API_KEY));
 		assertTrue(result);
 	}
 
 	/**
 	 * Test the GitHubService implementation for removing an existing label from
 	 * any GitHub issue.
-	 * @throws GitHubServiceException 
+	 * 
+	 * @throws GitHubServiceException
 	 */
 	@Test
 	public final void removeLable() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
+				"lame", 1, new GitHubCredentials(TEST_USER, API_KEY));
 		assertTrue(result);
 	}
 }
