@@ -50,7 +50,8 @@ public class GitHubServiceTest {
 	@Test
 	public final void verifyCredentials() throws GitHubServiceException {
 		GitHubService service = new GitHubService();
-		assertTrue(service.verifyCredentials(new GitHubCredentials(TEST_USER, API_KEY)));
+		assertTrue(service.verifyCredentials(new GitHubCredentials(TEST_USER,
+				API_KEY)));
 	}
 
 	/**
@@ -62,7 +63,8 @@ public class GitHubServiceTest {
 	public final void searchIssues() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
-				TEST_PROJECT, "open", "test");
+				TEST_PROJECT, "open", "test", new GitHubCredentials(TEST_USER,
+						API_KEY));
 		assertEquals(0, issues.getIssues().length);
 	}
 

@@ -112,13 +112,14 @@ public class GitHubRepositorySettingsPage extends
 					String user = urlMatcher.group(1);
 					String repo = urlMatcher.group(2);
 					AuthenticationCredentials auth = repository.getCredentials(AuthenticationType.REPOSITORY);
+					GitHubCredentials credentials = new GitHubCredentials(auth);
 					
 					GitHubService service = new GitHubService();
 	
 					monitor.subTask("Contacting server...");
 					try {
 						// verify the repo
-						service.searchIssues(user, repo, "open","");
+						service.searchIssues(user, repo, "open","", credentials);
 						monitor.worked(400);
 						
 						// verify the credentials
@@ -126,7 +127,6 @@ public class GitHubRepositorySettingsPage extends
 							setStatus(GitHubUi.createErrorStatus("Credentials are required.  Please specify username and API Token."));
 							return;
 						}
-						GitHubCredentials credentials = new GitHubCredentials(auth.getUserName(), auth.getPassword());
 						if (!service.verifyCredentials(credentials)) {
 							setStatus(GitHubUi.createErrorStatus("Invalid credentials.  Please check your GitHub User ID and API Token.\nYou can find your API Token on your GitHub account settings page."));
 							return;	

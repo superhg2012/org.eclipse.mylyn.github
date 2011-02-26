@@ -116,21 +116,22 @@ public class GitHubService {
 	 * @note API Doc: /issues/search/:user/:repo/:state/:search_term
 	 */
 	public final GitHubIssues searchIssues(final String user,
-			final String repo, final String state, final String searchTerm)
-			throws GitHubServiceException {
+			final String repo, final String state, final String searchTerm,
+			final GitHubCredentials credentials) throws GitHubServiceException {
 		GitHubIssues issues = null;
-		GetMethod method = null;
+		PostMethod method = null;
 		try {
 			if (searchTerm.trim().length() == 0) {
-				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
+				method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
 						+ user + "/" + repo + "/" + state);
 			} else {
-				method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SEARCH
+				method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + SEARCH
 						+ user + "/" + repo + "/" + state + "/" + searchTerm);
 			}
+			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-			issues = gson.fromJson(new String(method.getResponseBody()),
-					GitHubIssues.class);
+			String responseBody = new String(method.getResponseBody());
+			issues = gson.fromJson(responseBody, GitHubIssues.class);
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
 					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);
