@@ -55,5 +55,6 @@ public final class GitHub {
 	public static final String ADD_LABEL = "label/add/"; 
 	public static final String REMOVE_LABEL = "label/remove/";
 	public static final String EMAILS = "emails";
+	public static final String GITHUB_TASK_LABEL="task.common.label";
 
 }

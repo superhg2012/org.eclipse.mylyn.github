@@ -128,12 +128,14 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		try {
 			String user = buildTaskRepositoryUser(repository.getUrl());
 			String project = buildTaskRepositoryProject(repository.getUrl());
-			AuthenticationCredentials auth = repository.getCredentials(AuthenticationType.REPOSITORY);
+			AuthenticationCredentials auth = repository
+					.getCredentials(AuthenticationType.REPOSITORY);
 			GitHubCredentials credentials = new GitHubCredentials(auth);
 			for (String status : statuses) {
-				GitHubIssues issues = service
-						.searchIssues(user, project, status,
-								query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE), credentials);
+				GitHubIssues issues = service.searchIssues(user, project,
+						status,
+						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
+						credentials);
 				for (GitHubIssue issue : issues.getIssues()) {
 					TaskData taskData = taskDataHandler.createTaskData(
 							repository, monitor, user, project, issue, true);
@@ -155,9 +157,12 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 		String user = buildTaskRepositoryUser(repository.getUrl());
 		String project = buildTaskRepositoryProject(repository.getUrl());
-
+		AuthenticationCredentials auth = repository
+				.getCredentials(AuthenticationType.REPOSITORY);
+		GitHubCredentials credentials = new GitHubCredentials(auth);
 		try {
-			GitHubIssue issue = service.showIssue(user, project, taskId);
+			GitHubIssue issue = service.showIssue(user, project, taskId,
+					credentials);
 			TaskData taskData = taskDataHandler.createTaskData(repository,
 					monitor, user, project, issue, false);
 

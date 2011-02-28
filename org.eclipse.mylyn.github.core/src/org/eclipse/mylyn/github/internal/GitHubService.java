@@ -16,18 +16,18 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import static org.eclipse.mylyn.github.internal.GitHub.ADD_LABEL;
 import static org.eclipse.mylyn.github.internal.GitHub.API_ISSUES_ROOT;
 import static org.eclipse.mylyn.github.internal.GitHub.API_URL_BASE;
 import static org.eclipse.mylyn.github.internal.GitHub.API_USER_ROOT;
-import static org.eclipse.mylyn.github.internal.GitHub.EMAILS;
-import static org.eclipse.mylyn.github.internal.GitHub.LIST;
-import static org.eclipse.mylyn.github.internal.GitHub.SEARCH;
-import static org.eclipse.mylyn.github.internal.GitHub.ADD_LABEL;
-import static org.eclipse.mylyn.github.internal.GitHub.REMOVE_LABEL;
-import static org.eclipse.mylyn.github.internal.GitHub.OPEN;
-import static org.eclipse.mylyn.github.internal.GitHub.REOPEN;
 import static org.eclipse.mylyn.github.internal.GitHub.CLOSE;
 import static org.eclipse.mylyn.github.internal.GitHub.EDIT;
+import static org.eclipse.mylyn.github.internal.GitHub.EMAILS;
+import static org.eclipse.mylyn.github.internal.GitHub.LIST;
+import static org.eclipse.mylyn.github.internal.GitHub.OPEN;
+import static org.eclipse.mylyn.github.internal.GitHub.REMOVE_LABEL;
+import static org.eclipse.mylyn.github.internal.GitHub.REOPEN;
+import static org.eclipse.mylyn.github.internal.GitHub.SEARCH;
 import static org.eclipse.mylyn.github.internal.GitHub.SHOW;
 
 import java.io.IOException;
@@ -37,7 +37,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -338,11 +337,16 @@ public class GitHubService {
 	 *             - in case that the get operation is failing
 	 */
 	public final GitHubIssue showIssue(final String user, final String repo,
-			final String issueNumber) throws GitHubServiceException {
-		GetMethod method = null;
+			final String issueNumber, final GitHubCredentials credentials)
+			throws GitHubServiceException {
+		StringBuilder uri = new StringBuilder(API_URL_BASE)
+				.append(API_ISSUES_ROOT).append(SHOW).append(user).append("/")
+				.append(repo).append("/").append(issueNumber);
+
+		PostMethod method = null;
 		try {
-			method = new GetMethod(API_URL_BASE + API_ISSUES_ROOT + SHOW + user
-					+ "/" + repo + "/" + issueNumber);
+			method = new PostMethod(uri.toString());
+			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
 			GitHubShowIssue issue = gson
 					.fromJson(new String(method.getResponseBody()),
@@ -359,6 +363,7 @@ public class GitHubService {
 				method.releaseConnection();
 			}
 		}
+
 	}
 
 	/**

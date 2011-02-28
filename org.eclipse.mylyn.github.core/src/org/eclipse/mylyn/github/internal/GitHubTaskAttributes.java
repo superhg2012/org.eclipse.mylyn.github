@@ -3,7 +3,7 @@ package org.eclipse.mylyn.github.internal;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 
 public enum GitHubTaskAttributes {
-
+	
 	KEY("Key",TaskAttribute.TASK_KEY,TaskAttribute.TYPE_SHORT_TEXT,true,true,true),
 	TITLE("Summary",TaskAttribute.SUMMARY,TaskAttribute.TYPE_SHORT_TEXT,true,false,true), 
 	BODY("Description",TaskAttribute.DESCRIPTION,TaskAttribute.TYPE_LONG_RICH_TEXT,true,false,true),
@@ -13,7 +13,7 @@ public enum GitHubTaskAttributes {
 	CLOSED_DATE("Closed",TaskAttribute.DATE_COMPLETION,TaskAttribute.TYPE_DATETIME,false,true,false),
 	
 	STATUS("Status",TaskAttribute.STATUS,TaskAttribute.TYPE_SHORT_TEXT,true,false,true),
-	LABEL("Label", TaskAttribute.TASK_KIND, TaskAttribute.TYPE_MULTI_SELECT, true, false, true)
+	LABEL("Label", GitHub.GITHUB_TASK_LABEL, TaskAttribute.TYPE_SHORT_TEXT, true, false, true)
 	;
 	
 
