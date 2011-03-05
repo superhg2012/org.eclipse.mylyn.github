@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: site
-Bundle-SymbolicName: site
+Bundle-Name: Mylyn Github Update Site plug-in
+Bundle-SymbolicName: org.eclipse.mylyn.github.site
 Bundle-Version: 0.2.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Gabriel Ciuloaica
