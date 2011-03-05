@@ -16,7 +16,9 @@
  */
 package org.eclipse.mylyn.github.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Container of multiple GitHub Issues, used when returning JSON objects
@@ -32,6 +34,33 @@ public class GitHubIssues {
 	 */
 	public final GitHubIssue[] getIssues() {
 		return Arrays.copyOf(issues, issues.length);
+	}
+
+	/**
+	 * Filter the collection of issues, based on the label
+	 * 
+	 * @param filter
+	 *            - label value
+	 * @return a filtered array.
+	 */
+	public final GitHubIssue[] getIssuesLabeled(String filter) {
+		GitHubIssue labeledIssues[] = null;
+		if (filter.equalsIgnoreCase("all")) {
+			labeledIssues = getIssues();
+		} else {
+			List<GitHubIssue> issues = Arrays.asList(getIssues());
+			List<GitHubIssue> filteredIssues = new ArrayList<GitHubIssue>();
+			for (GitHubIssue issue : issues) {
+				List<String> labels = issue.getLabels();
+				for (String label : labels) {
+					if (label.equalsIgnoreCase(filter)) {
+						filteredIssues.add(issue);
+					}
+				}
+			}
+			labeledIssues = filteredIssues.toArray(new GitHubIssue[0]);
+		}
+		return labeledIssues;
 	}
 
 }

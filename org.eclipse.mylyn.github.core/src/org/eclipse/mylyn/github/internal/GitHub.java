@@ -35,6 +35,7 @@ public final class GitHub {
 	public static final String MONITOR_STATUS_IN_PROGRESS = "Querying repository ...";
 
 	public static final String QUERY_TEXT_ATTRIBUTE = "queryText";
+	public static final String QUERY_TEXT_LABEL = "queryLabel";
 
 	public static final Pattern URL_PATTERN = Pattern.compile("(?:"
 			+ Pattern.quote(HTTP_WWW_GITHUB_ORG) + "|"

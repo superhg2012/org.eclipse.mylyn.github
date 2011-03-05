@@ -136,7 +136,9 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 						status,
 						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
 						credentials);
-				for (GitHubIssue issue : issues.getIssues()) {
+				String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
+				
+				for (GitHubIssue issue : issues.getIssuesLabeled(label)) {
 					TaskData taskData = taskDataHandler.createTaskData(
 							repository, monitor, user, project, issue, true);
 					collector.accept(taskData);

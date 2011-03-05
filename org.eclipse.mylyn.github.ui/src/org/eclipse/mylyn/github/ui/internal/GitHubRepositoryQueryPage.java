@@ -16,14 +16,27 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
+import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -36,12 +49,19 @@ import org.eclipse.swt.widgets.Text;
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	private static final String ATTR_QUERY_TEXT = "queryText";
-
-	private static final String ATTR_STATUS = "status";
+	private static final String ATTR_QUERY_STATUS = "status";
+	private static final String ATTR_QUERY_LABEL = "queryLabel";
 
 	private Text queryText = null;
+	private Text queryTitle = null;
 
 	private Combo status = null;
+	private Combo label = null;
+
+	private Button updateButton;
+	private boolean firstTime = true;
+
+	private final TaskRepository taskRepository;
 
 	/**
 	 * @param taskRepository
@@ -50,29 +70,23 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	public GitHubRepositoryQueryPage(final TaskRepository taskRepository,
 			final IRepositoryQuery query) {
 		super("GitHub", taskRepository, query);
-		setTitle("GitHub search query parameters");
-		setDescription("Valid search query parameters entered.");
+		setTitle("Enter query parameters");
+		setDescription("Please specify a title for the query.");
 		setPageComplete(false);
+		this.taskRepository = taskRepository;
 	}
 
 	@Override
 	public String getQueryTitle() {
-		return "GitHub Query";
+		return queryTitle.getText();
 	}
 
 	@Override
 	public void applyTo(IRepositoryQuery query) {
-		String statusString = status.getText();
-		String queryString = queryText.getText();
-		
-		String summary = statusString;
-		summary += " issues";
-		if (queryString!=null && queryString.trim().length() > 0) {
-			summary += " matching "+queryString;
-		}
-		query.setSummary(summary);
-		query.setAttribute(ATTR_STATUS, statusString);
-		query.setAttribute(ATTR_QUERY_TEXT, queryString);
+		query.setSummary(queryTitle.getText());
+		query.setAttribute(ATTR_QUERY_STATUS, status.getText());
+		query.setAttribute(ATTR_QUERY_TEXT, queryText.getText());
+		query.setAttribute(ATTR_QUERY_LABEL, label.getText());
 	}
 
 	/**
@@ -88,16 +102,61 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		gridLayout.horizontalSpacing = 8;
 		composite.setLayout(gridLayout);
 
-		
+		ModifyListener modifyListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				setPageComplete(isPageComplete());
+			}
+		};
+
+		// create the query title entry box
+		new Label(composite, SWT.NONE).setText("Query Title:");
+		queryTitle = new Text(composite, SWT.BORDER);
+		queryTitle
+				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		queryTitle.addModifyListener(modifyListener);
+		queryTitle.setFocus();
+
 		// create the status option combo box
-		new Label(composite, SWT.NONE).setText("Status:");
-		status = new Combo(composite, SWT.READ_ONLY);
+		new Label(composite, SWT.NONE).setText("Attributes:");
+
+		createQueryWidgets(composite);
+
+		// create the query entry box
+		new Label(composite, SWT.NONE).setText("Query Text:");
+		queryText = new Text(composite, SWT.BORDER);
+		queryText
+				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		String queryModelText = getQuery() == null ? null : getQuery()
+				.getAttribute(ATTR_QUERY_TEXT);
+		queryText.setText(queryModelText == null ? "" : queryModelText);
+
+		if (getQuery() != null) {
+			queryTitle.setText(getQuery().getSummary());
+			queryText.setText(getQuery().getAttribute(ATTR_QUERY_TEXT));
+
+		}
+		Dialog.applyDialogFont(composite);
+		setControl(composite);
+	}
+
+	private Control createQueryWidgets(final Composite control) {
+		Composite group = new Composite(control, SWT.NONE);
+		GridLayout layout = new GridLayout(5, true);
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		group.setLayout(layout);
+
+		new Label(group, SWT.NONE).setText("Issue Status:");
+		status = new Combo(group, SWT.READ_ONLY);
 		String[] queryValues = new String[] { "all", "open", "closed" };
 		status.setItems(queryValues);
+		status.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		status.select(0);
-		String queryModelStatus =  getQuery()==null?null:getQuery().getAttribute(ATTR_STATUS);
+		String queryModelStatus = getQuery() == null ? null : getQuery()
+				.getAttribute(ATTR_QUERY_STATUS);
 		if (queryModelStatus != null) {
-			for (int x = 0;x<queryValues.length;++x) {
+			for (int x = 0; x < queryValues.length; ++x) {
 				if (queryValues[x].equals(queryModelStatus)) {
 					status.select(x);
 					break;
@@ -105,22 +164,96 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			}
 		}
 
-		// create the query entry box
-		new Label(composite, SWT.NONE).setText("Query text:");
-		queryText = new Text(composite, SWT.BORDER);
-		GridData gridData = new GridData();
-		gridData.widthHint = 250;
-		queryText.setLayoutData(gridData);
-		String queryModelText = getQuery()==null?null:getQuery().getAttribute(ATTR_QUERY_TEXT);
-		queryText.setText(queryModelText==null?"":queryModelText);
+		// create the status option combo box
+		new Label(group, SWT.NONE).setText("Issue Label:");
+		label = new Combo(group, SWT.READ_ONLY);
+		String queryLabelsValues[] = new String[] { "all" };
+		label.setItems(queryLabelsValues);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		label.select(0);
+		String queryModelLabelStatus = getQuery() == null ? null : getQuery()
+				.getAttribute(ATTR_QUERY_LABEL);
+		if (queryModelLabelStatus != null) {
+			for (int x = 0; x < queryLabelsValues.length; ++x) {
+				if (queryLabelsValues[x].equals(queryModelLabelStatus)) {
+					label.select(x);
+					break;
+				}
+			}
+		}
 
-		setControl(composite);
+		updateButton = new Button(group, SWT.PUSH);
+		updateButton.setText("Update ");
+		updateButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false));
+		updateButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (getTaskRepository() != null) {
+					updateAttributesFromRepository();
+				} else {
+					MessageDialog.openInformation(Display.getCurrent()
+							.getActiveShell(), "Failed to update attributes",
+							"No repository available");
+				}
+			}
+
+		});
+
+		return group;
+	}
+
+	private void updateAttributesFromRepository() {
+		GitHubRepositoryConnector connector = (GitHubRepositoryConnector) TasksUi
+				.getRepositoryManager().getRepositoryConnector(
+						GitHub.CONNECTOR_KIND);
+		String labelsValues[] = null;
+		try {
+			labelsValues = connector.getService()
+					.retrieveLabels(taskRepository);
+		} catch (GitHubServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (labelsValues != null) {
+			label.setItems(labelsValues);
+		}
+		label.add("all", 0);
+		label.select(0);
+
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+
+		if (getSearchContainer() != null) {
+			getSearchContainer().setPerformActionEnabled(true);
+		}
+
+		if (visible && firstTime) {
+			firstTime = false;
+
+			// delay the execution so the dialog's progress bar is visible
+			// when the attributes are updated
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					if (getControl() != null && !getControl().isDisposed()) {
+						updateAttributesFromRepository();
+					}
+				}
+
+			});
+
+		}
 	}
 
 	@Override
 	public boolean isPageComplete() {
-		setErrorMessage(null);
-		return true;
+		if (queryTitle != null && queryTitle.getText().length() > 0) {
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -29,6 +29,7 @@ import static org.eclipse.mylyn.github.internal.GitHub.REMOVE_LABEL;
 import static org.eclipse.mylyn.github.internal.GitHub.REOPEN;
 import static org.eclipse.mylyn.github.internal.GitHub.SEARCH;
 import static org.eclipse.mylyn.github.internal.GitHub.SHOW;
+import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
 
 import java.io.IOException;
 
@@ -41,6 +42,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
+import org.eclipse.mylyn.commons.net.AuthenticationType;
+import org.eclipse.mylyn.tasks.core.TaskRepository;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -125,8 +129,9 @@ public class GitHubService {
 				method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
 						+ user + "/" + repo + "/" + state);
 			} else {
-				method = new PostMethod(URIUtil.encodePath(API_URL_BASE + API_ISSUES_ROOT + SEARCH
-						+ user + "/" + repo + "/" + state + "/" + searchTerm));
+				method = new PostMethod(URIUtil.encodePath(API_URL_BASE
+						+ API_ISSUES_ROOT + SEARCH + user + "/" + repo + "/"
+						+ state + "/" + searchTerm));
 			}
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
@@ -490,6 +495,44 @@ public class GitHubService {
 		final NameValuePair body = new NameValuePair("body", issue.getBody());
 		final NameValuePair title = new NameValuePair("title", issue.getTitle());
 		return new NameValuePair[] { login, token, body, title };
+
+	}
+
+	/**
+	 * Retrieve all labels available for a project.
+	 * 
+	 * @param taskRepository
+	 * @return null or a list of labels
+	 * @throws GitHubServiceException
+	 * @note API Doc:/issues/labels/:user/:repo
+	 */
+	public String[] retrieveLabels(final TaskRepository repository)
+			throws GitHubServiceException {
+		PostMethod method = null;
+		AuthenticationCredentials auth = repository
+				.getCredentials(AuthenticationType.REPOSITORY);
+		GitHubCredentials credentials = new GitHubCredentials(auth);
+		String project = buildTaskRepositoryProject(repository.getUrl());
+		GitHubLabels labels = null;
+		try {
+			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + "labels/"
+					+ credentials.getUsername() + "/" + project);
+
+			method.setRequestBody(getCredentials(credentials));
+			executeMethod(method);
+			String response = method.getResponseBodyAsString();
+			labels = gson.fromJson(response, GitHubLabels.class);
+
+		} catch (IOException e) {
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
+		} finally {
+			if (method != null) {
+				method.releaseConnection();
+			}
+		}
+
+		return labels.getLabes();
 
 	}
 }
