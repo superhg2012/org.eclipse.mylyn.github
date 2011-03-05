@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -124,8 +125,8 @@ public class GitHubService {
 				method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + LIST
 						+ user + "/" + repo + "/" + state);
 			} else {
-				method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + SEARCH
-						+ user + "/" + repo + "/" + state + "/" + searchTerm);
+				method = new PostMethod(URIUtil.encodePath(API_URL_BASE + API_ISSUES_ROOT + SEARCH
+						+ user + "/" + repo + "/" + state + "/" + searchTerm));
 			}
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);

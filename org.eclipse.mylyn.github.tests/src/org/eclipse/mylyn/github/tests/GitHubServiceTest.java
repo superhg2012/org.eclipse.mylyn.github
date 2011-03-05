@@ -67,6 +67,20 @@ public class GitHubServiceTest {
 						API_KEY));
 		assertEquals(0, issues.getIssues().length);
 	}
+	
+	/**
+	 * Test the GitHubService issue searching implementation, multiple query keys
+	 * 
+	 * @throws GitHubServiceException
+	 */
+	@Test
+	public final void searchIssuesWithMultipleKeys() throws GitHubServiceException {
+		final GitHubService service = new GitHubService();
+		final GitHubIssues issues = service.searchIssues(TEST_USER,
+				TEST_PROJECT, "open", "task or issue", new GitHubCredentials(TEST_USER,
+						API_KEY));
+		assertEquals(0, issues.getIssues().length);
+	}
 
 	/**
 	 * Test the GitHubService implementation for opening a new issue.
