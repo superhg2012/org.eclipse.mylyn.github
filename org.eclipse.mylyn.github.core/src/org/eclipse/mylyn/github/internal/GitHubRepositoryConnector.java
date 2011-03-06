@@ -20,6 +20,11 @@ import static org.eclipse.mylyn.github.internal.GitHubConnectorLogger.createErro
 import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
 import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryUser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -137,8 +142,12 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
 						credentials);
 				String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
-				
-				for (GitHubIssue issue : issues.getIssuesLabeled(label)) {
+				String orderBy = query.getAttribute(GitHub.QUERY_TEXT_ORDER);
+				List<GitHubIssue> filteredAndOrderedIssues = new ArrayList<GitHubIssue>(
+						issues.getIssuesLabeled(label));
+				orderIssues(filteredAndOrderedIssues, orderBy);
+
+				for (GitHubIssue issue : filteredAndOrderedIssues) {
 					TaskData taskData = taskDataHandler.createTaskData(
 							repository, monitor, user, project, issue, true);
 					collector.accept(taskData);
@@ -151,6 +160,19 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		}
 		monitor.done();
 		return result;
+	}
+
+	private void orderIssues(List<GitHubIssue> issuesLabeled, String orderBy) {
+		Comparator<GitHubIssue> orderHandler = null;
+		for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler.values()) {
+			if (handler.getLabel().equalsIgnoreCase(orderBy)) {
+				orderHandler = handler.getComparator();
+				break;
+			}
+		}
+		if (orderHandler != null) {
+			Collections.sort(issuesLabeled, orderHandler);
+		}
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class GitHubIssue {
 	private String title;
 
 	private String body;
-	
+
 	/**
 	 * open, closed
 	 */
@@ -45,9 +45,11 @@ public class GitHubIssue {
 	private String updatedAt;
 	@SerializedName("closed_at")
 	private String closedAt;
-	
+
 	private Integer comments;
-	
+
+	private Integer votes;
+
 	private List<String> labels;
 
 	/**
@@ -63,13 +65,14 @@ public class GitHubIssue {
 	 *            - The text body of the issue;
 	 */
 	public GitHubIssue(final String number, final String user,
-			final String title, final String body, final Integer comments, final List<String> labels) {
+			final String title, final String body, final Integer comments,
+			final List<String> labels) {
 		this.number = number;
 		this.user = user;
 		this.title = title;
 		this.body = body;
-		this.setComments(comments);
-		this.setLabels(labels);
+		this.comments = comments;
+		this.labels = labels;
 	}
 
 	/**
@@ -80,8 +83,9 @@ public class GitHubIssue {
 		this.user = "";
 		this.title = "";
 		this.body = "";
-		this.setComments(0);
-		this.setLabels(new ArrayList<String>());
+		this.comments = 0;
+		this.votes = 0;
+		this.labels = new ArrayList<String>();
 	}
 
 	/**
@@ -203,5 +207,13 @@ public class GitHubIssue {
 
 	public final List<String> getLabels() {
 		return labels;
+	}
+
+	public void setVotes(Integer votes) {
+		this.votes = votes;
+	}
+
+	public Integer getVotes() {
+		return votes;
 	}
 }

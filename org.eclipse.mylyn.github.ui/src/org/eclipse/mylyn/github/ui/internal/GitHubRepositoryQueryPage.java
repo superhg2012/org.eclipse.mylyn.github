@@ -19,6 +19,7 @@ package org.eclipse.mylyn.github.ui.internal;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.github.internal.GitHubIssueOrderHandler;
 import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
 import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
@@ -51,17 +52,29 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	private static final String ATTR_QUERY_TEXT = "queryText";
 	private static final String ATTR_QUERY_STATUS = "status";
 	private static final String ATTR_QUERY_LABEL = "queryLabel";
+	private static final String ATTR_QUERY_ORDER = "queryOrder";
 
 	private Text queryText = null;
 	private Text queryTitle = null;
 
 	private Combo status = null;
 	private Combo label = null;
+	private Combo order = null;
 
 	private Button updateButton;
 	private boolean firstTime = true;
 
 	private final TaskRepository taskRepository;
+
+	private static String[] getOrderLabel() {
+
+		String orderLabels[] = new String[GitHubIssueOrderHandler.values().length];
+		int i = 0;
+		for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler.values()) {
+			orderLabels[i++] = handler.getLabel();
+		}
+		return orderLabels;
+	}
 
 	/**
 	 * @param taskRepository
@@ -87,6 +100,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		query.setAttribute(ATTR_QUERY_STATUS, status.getText());
 		query.setAttribute(ATTR_QUERY_TEXT, queryText.getText());
 		query.setAttribute(ATTR_QUERY_LABEL, label.getText());
+		query.setAttribute(ATTR_QUERY_ORDER, order.getText());
 	}
 
 	/**
@@ -130,6 +144,8 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 				.getAttribute(ATTR_QUERY_TEXT);
 		queryText.setText(queryModelText == null ? "" : queryModelText);
 
+		createOrderWidget(composite);
+
 		if (getQuery() != null) {
 			queryTitle.setText(getQuery().getSummary());
 			queryText.setText(getQuery().getAttribute(ATTR_QUERY_TEXT));
@@ -139,9 +155,30 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		setControl(composite);
 	}
 
+	private void createOrderWidget(Composite parent) {
+		new Label(parent, SWT.NONE).setText("Order By:");
+		order = new Combo(parent, SWT.READ_ONLY);
+
+		order.setItems(GitHubRepositoryQueryPage.getOrderLabel());
+		order.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		order.select(0);
+		String queryModelStatus = getQuery() == null ? null : getQuery()
+				.getAttribute(ATTR_QUERY_ORDER);
+		if (queryModelStatus != null) {
+			for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler
+					.values()) {
+				if (handler.getLabel().equalsIgnoreCase(queryModelStatus)) {
+					order.select(handler.getIndex());
+					break;
+				}
+			}
+		}
+
+	}
+
 	private Control createQueryWidgets(final Composite control) {
 		Composite group = new Composite(control, SWT.NONE);
-		GridLayout layout = new GridLayout(5, true);
+		GridLayout layout = new GridLayout(5, false);
 		layout.marginLeft = 0;
 		layout.marginRight = 0;
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -164,7 +201,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			}
 		}
 
-		// create the status option combo box
+		// create the label option combo box
 		new Label(group, SWT.NONE).setText("Issue Label:");
 		label = new Combo(group, SWT.READ_ONLY);
 		String queryLabelsValues[] = new String[] { "all" };
@@ -174,7 +211,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		String queryModelLabelStatus = getQuery() == null ? null : getQuery()
 				.getAttribute(ATTR_QUERY_LABEL);
 		if (queryModelLabelStatus != null) {
-			for (int x = 0; x < queryLabelsValues.length; ++x) {
+			for (int x = 1; x < queryLabelsValues.length; ++x) {
 				if (queryLabelsValues[x].equals(queryModelLabelStatus)) {
 					label.select(x);
 					break;
@@ -223,6 +260,16 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		}
 		label.add("all", 0);
 		label.select(0);
+		String queryModelLabelStatus = getQuery() == null ? null : getQuery()
+				.getAttribute(ATTR_QUERY_LABEL);
+		if (queryModelLabelStatus != null) {
+			for (int x = 1; x < labelsValues.length; ++x) {
+				if (labelsValues[x].equals(queryModelLabelStatus)) {
+					label.select(x);
+					break;
+				}
+			}
+		}
 
 	}
 

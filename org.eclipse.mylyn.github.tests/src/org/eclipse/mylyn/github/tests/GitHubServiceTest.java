@@ -19,8 +19,14 @@ package org.eclipse.mylyn.github.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.mylyn.github.internal.GitHubCredentials;
 import org.eclipse.mylyn.github.internal.GitHubIssue;
+import org.eclipse.mylyn.github.internal.GitHubIssueOrder;
 import org.eclipse.mylyn.github.internal.GitHubIssues;
 import org.eclipse.mylyn.github.internal.GitHubService;
 import org.eclipse.mylyn.github.internal.GitHubServiceException;
@@ -66,6 +72,31 @@ public class GitHubServiceTest {
 				TEST_PROJECT, "open", "test", new GitHubCredentials(TEST_USER,
 						API_KEY));
 		assertEquals(0, issues.getIssues().size());
+	}
+	
+	/**
+	 * Test the GitHubService issue searching implementation
+	 * 
+	 * @throws GitHubServiceException
+	 */
+	@Test
+	public final void searchIssuesOrderingResponse() throws GitHubServiceException {
+		final GitHubService service = new GitHubService();
+		final GitHubIssues issues = service.searchIssues(TEST_USER,
+				TEST_PROJECT, "open", "", new GitHubCredentials(TEST_USER,
+						API_KEY));
+		List<GitHubIssue> unfilteredIsssues = new ArrayList<GitHubIssue>(issues.getIssues());
+		Collections.sort(unfilteredIsssues, GitHubIssueOrder.ID);
+		Iterator<GitHubIssue> it = unfilteredIsssues.iterator();
+		while(it.hasNext()) {
+			GitHubIssue firstIssue = it.next();
+			if (it.hasNext()) {
+				GitHubIssue secondIssue =it.next();
+				assertTrue(Integer.valueOf(firstIssue.getNumber()) < Integer.valueOf(secondIssue.getNumber()));
+			}
+		}
+		
+		
 	}
 	
 	/**

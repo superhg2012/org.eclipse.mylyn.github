@@ -57,6 +57,7 @@ public class MarshalingTest {
 		assertEquals("open", issue.getState());
 		assertTrue(issue.getLabels().isEmpty());
 		assertTrue(issue.getComments() == NUMBER_OF_COMMENTS);
+		assertTrue(0 == issue.getVotes());
 	}
 
 	private String getResource(String resource) throws IOException {

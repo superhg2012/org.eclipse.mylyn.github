@@ -36,6 +36,7 @@ public final class GitHub {
 
 	public static final String QUERY_TEXT_ATTRIBUTE = "queryText";
 	public static final String QUERY_TEXT_LABEL = "queryLabel";
+	public static final String QUERY_TEXT_ORDER = "queryOrder";
 
 	public static final Pattern URL_PATTERN = Pattern.compile("(?:"
 			+ Pattern.quote(HTTP_WWW_GITHUB_ORG) + "|"
@@ -57,5 +58,6 @@ public final class GitHub {
 	public static final String REMOVE_LABEL = "label/remove/";
 	public static final String EMAILS = "emails";
 	public static final String GITHUB_TASK_LABEL="task.common.label";
+	
 
 }
