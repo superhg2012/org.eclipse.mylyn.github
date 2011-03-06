@@ -41,9 +41,9 @@ public class MarshalingTest {
 		assertTrue(issues != null);
 		assertTrue(issues.getIssues() != null);
 
-		assertEquals(NUMBER_OF_EXPECTED_ISSUES, issues.getIssues().length);
+		assertEquals(NUMBER_OF_EXPECTED_ISSUES, issues.getIssues().size());
 
-		GitHubIssue issue = issues.getIssues()[INDEX_OF_LAST_ISSUE_FROM_LIST];
+		GitHubIssue issue = (issues.getIssues().toArray(new GitHubIssue[0]))[INDEX_OF_LAST_ISSUE_FROM_LIST];
 		// {"number":10,"votes":0,"created_at":"2010/02/04 21:03:54 -0800","body":"test description 2 ","title":"test issue for testing mylyn github connector2",
 		// "updated_at":"2010/02/04 21:09:37 -0800","closed_at":null,"user":"dgreen99","labels":[],"state":"open"}]}
 		assertEquals("10", issue.getNumber());

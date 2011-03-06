@@ -65,7 +65,7 @@ public class GitHubServiceTest {
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
 				TEST_PROJECT, "open", "test", new GitHubCredentials(TEST_USER,
 						API_KEY));
-		assertEquals(0, issues.getIssues().length);
+		assertEquals(0, issues.getIssues().size());
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class GitHubServiceTest {
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
 				TEST_PROJECT, "open", "task or issue", new GitHubCredentials(TEST_USER,
 						API_KEY));
-		assertEquals(0, issues.getIssues().length);
+		assertEquals(0, issues.getIssues().size());
 	}
 
 	/**

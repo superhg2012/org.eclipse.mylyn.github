@@ -16,9 +16,11 @@
  */
 package org.eclipse.mylyn.github.internal;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+
+import org.eclipse.mylyn.github.internal.collections.CollectionUtils;
+import org.eclipse.mylyn.github.internal.collections.Predicate;
 
 /**
  * Container of multiple GitHub Issues, used when returning JSON objects
@@ -32,8 +34,8 @@ public class GitHubIssues {
 	 * 
 	 * @return The array of individual GitHub Issues
 	 */
-	public final GitHubIssue[] getIssues() {
-		return Arrays.copyOf(issues, issues.length);
+	public final Collection<GitHubIssue> getIssues() {
+		return Arrays.asList(issues);
 	}
 
 	/**
@@ -43,24 +45,20 @@ public class GitHubIssues {
 	 *            - label value
 	 * @return a filtered array.
 	 */
-	public final GitHubIssue[] getIssuesLabeled(String filter) {
-		GitHubIssue labeledIssues[] = null;
+	public final Collection<GitHubIssue> getIssuesLabeled(final String filter) {
+		Collection<GitHubIssue> filteredIssues = null;
 		if (filter.equalsIgnoreCase("all")) {
-			labeledIssues = getIssues();
+			filteredIssues = getIssues();
 		} else {
-			List<GitHubIssue> issues = Arrays.asList(getIssues());
-			List<GitHubIssue> filteredIssues = new ArrayList<GitHubIssue>();
-			for (GitHubIssue issue : issues) {
-				List<String> labels = issue.getLabels();
-				for (String label : labels) {
-					if (label.equalsIgnoreCase(filter)) {
-						filteredIssues.add(issue);
-					}
-				}
-			}
-			labeledIssues = filteredIssues.toArray(new GitHubIssue[0]);
+			filteredIssues = CollectionUtils.filter(getIssues(),
+					new Predicate<GitHubIssue>() {
+						@Override
+						public boolean apply(GitHubIssue issue) {
+							return issue.getLabels().contains(filter);
+						}
+					});
 		}
-		return labeledIssues;
+		return filteredIssues;
 	}
 
 }
