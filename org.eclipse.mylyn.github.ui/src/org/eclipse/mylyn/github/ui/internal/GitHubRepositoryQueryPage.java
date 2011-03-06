@@ -212,10 +212,13 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			labelsValues = connector.getService()
 					.retrieveLabels(taskRepository);
 		} catch (GitHubServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageDialog.openInformation(
+					Display.getCurrent().getActiveShell(),
+					"Seervice not available.", e.getMessage());
 		}
+		label.removeAll();
 		if (labelsValues != null) {
+
 			label.setItems(labelsValues);
 		}
 		label.add("all", 0);
