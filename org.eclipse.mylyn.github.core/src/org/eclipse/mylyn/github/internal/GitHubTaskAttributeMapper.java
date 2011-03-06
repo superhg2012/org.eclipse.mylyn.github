@@ -38,4 +38,5 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 		}
 		return null;
 	}
+
 }

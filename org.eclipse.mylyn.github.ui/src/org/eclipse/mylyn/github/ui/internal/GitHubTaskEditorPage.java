@@ -23,6 +23,7 @@ import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractAttributeEditor;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
+import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPart;
 import org.eclipse.mylyn.tasks.ui.editors.AttributeEditorFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorPartDescriptor;
@@ -56,16 +57,22 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		while (descriptorIt.hasNext()) {
 			TaskEditorPartDescriptor partDescriptor = descriptorIt.next();
 			if (partDescriptor.getId().equals(ID_PART_ATTRIBUTES)) {
-				
-				// descriptorIt.remove();
+
+				descriptorIt.remove();
 			} else if (partDescriptor.getId().equals(ID_PART_COMMENTS)) {
 				// currently the API doesn't support reading existing comments,
 				// though it does allow for creating them. Silly really.
 				// see
 				// http://support.github.com/discussions/feature-requests/696-issues-api-improvement
-				descriptorIt.remove();
+				// descriptorIt.remove();
 			}
 		}
+		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_ATTRIBUTES) {
+			@Override
+			public AbstractTaskEditorPart createPart() {
+				return new GitHubAttributesTaskEditorPart();
+			}
+		}.setPath(PATH_ATTRIBUTES));
 		return partDescriptors;
 	}
 

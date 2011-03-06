@@ -38,7 +38,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
 
 	private final DateFormat githubDateFormat = new SimpleDateFormat(
-			"yyyy/mm/dd HH:MM:ss Z");
+			"yyyy/MM/dd HH:mm:ss Z");
 
 	/**
 	 * Create a new data handler instance.
@@ -106,7 +106,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			GitHubCredentials credentials = GitHubCredentials
 					.create(repository);
 			if (taskData.isNew()) {
-				issue = service.openIssueForView(user, repo, issue, credentials);
+				issue = service
+						.openIssueForView(user, repo, issue, credentials);
 			} else {
 				TaskAttribute operationAttribute = taskData.getRoot()
 						.getAttribute(TaskAttribute.OPERATION);
@@ -182,12 +183,27 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 				toLocalDate(issue.getClosedAt()));
 		createLabelAttribute(data, GitHubTaskAttributes.LABEL,
 				issue.getLabels());
+		createVotesAttribute(data, GitHubTaskAttributes.VOTES, issue.getVotes());
 
 		if (isPartial(data)) {
 			data.setPartial(isPartialData);
 		}
 
 		return data;
+	}
+
+	private void createVotesAttribute(TaskData data,
+			GitHubTaskAttributes attribute, Integer value) {
+		TaskAttribute attr = data.getRoot().createAttribute(attribute.getId());
+		TaskAttributeMetaData metaData = attr.getMetaData();
+		metaData.defaults().setType(attribute.getType())
+				.setKind(attribute.getKind()).setLabel(attribute.getLabel())
+				.setReadOnly(attribute.isReadOnly());
+
+		if (value != null) {
+			attr.setValue(String.valueOf(value));
+		}
+
 	}
 
 	private void createLabelAttribute(TaskData data,
