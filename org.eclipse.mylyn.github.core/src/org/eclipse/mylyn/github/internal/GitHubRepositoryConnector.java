@@ -136,24 +136,25 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			AuthenticationCredentials auth = repository
 					.getCredentials(AuthenticationType.REPOSITORY);
 			GitHubCredentials credentials = new GitHubCredentials(auth);
+			String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
+			List<GitHubIssue> filteredAndOrderedIssues = new ArrayList<GitHubIssue>();
 			for (String status : statuses) {
 				GitHubIssues issues = service.searchIssues(user, project,
 						status,
 						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
 						credentials);
-				String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
-				String orderBy = query.getAttribute(GitHub.QUERY_TEXT_ORDER);
-				List<GitHubIssue> filteredAndOrderedIssues = new ArrayList<GitHubIssue>(
-						issues.getIssuesLabeled(label));
-				orderIssues(filteredAndOrderedIssues, orderBy);
-
-				for (GitHubIssue issue : filteredAndOrderedIssues) {
-					TaskData taskData = taskDataHandler.createTaskData(
-							repository, monitor, user, project, issue, true);
-					collector.accept(taskData);
-				}
-				monitor.worked(1);
+				
+				filteredAndOrderedIssues.addAll(issues.getIssuesLabeled(label));
 			}
+			String orderBy = query.getAttribute(GitHub.QUERY_TEXT_ORDER);
+			orderIssues(filteredAndOrderedIssues, orderBy);
+
+			for (GitHubIssue issue : filteredAndOrderedIssues) {
+				TaskData taskData = taskDataHandler.createTaskData(
+						repository, monitor, user, project, issue, true);
+				collector.accept(taskData);
+			}
+			monitor.worked(1);
 			result = Status.OK_STATUS;
 		} catch (GitHubServiceException e) {
 			result = createErrorStatus(e);
