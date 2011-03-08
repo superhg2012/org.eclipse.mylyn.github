@@ -184,6 +184,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		createLabelAttribute(data, GitHubTaskAttributes.LABEL,
 				issue.getLabels());
 		createVotesAttribute(data, GitHubTaskAttributes.VOTES, issue.getVotes());
+		createAttribute(data, GitHubTaskAttributes.REPORTED_BY, issue.getUser());
 
 		if (isPartial(data)) {
 			data.setPartial(isPartialData);

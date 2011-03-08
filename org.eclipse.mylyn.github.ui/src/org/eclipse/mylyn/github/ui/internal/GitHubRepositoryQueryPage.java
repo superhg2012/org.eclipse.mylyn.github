@@ -19,7 +19,6 @@ package org.eclipse.mylyn.github.ui.internal;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.mylyn.github.internal.GitHub;
-import org.eclipse.mylyn.github.internal.GitHubIssueOrderHandler;
 import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
 import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
@@ -51,29 +50,17 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	private static final String ATTR_QUERY_TEXT = "queryText";
 	private static final String ATTR_QUERY_STATUS = "status";
 	private static final String ATTR_QUERY_LABEL = "queryLabel";
-	private static final String ATTR_QUERY_ORDER = "queryOrder";
 
 	private Text queryText = null;
 	private Text queryTitle = null;
 
 	private Combo status = null;
 	private Combo label = null;
-	private Combo order = null;
 
 	private Button updateButton;
 	private boolean firstTime = true;
 
 	private final TaskRepository taskRepository;
-
-	private static String[] getOrderLabel() {
-
-		String orderLabels[] = new String[GitHubIssueOrderHandler.values().length];
-		int i = 0;
-		for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler.values()) {
-			orderLabels[i++] = handler.getLabel();
-		}
-		return orderLabels;
-	}
 
 	/**
 	 * @param taskRepository
@@ -99,7 +86,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		query.setAttribute(ATTR_QUERY_STATUS, status.getText());
 		query.setAttribute(ATTR_QUERY_TEXT, queryText.getText());
 		query.setAttribute(ATTR_QUERY_LABEL, label.getText());
-		query.setAttribute(ATTR_QUERY_ORDER, order.getText());
 	}
 
 	/**
@@ -146,7 +132,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 				.getAttribute(ATTR_QUERY_TEXT);
 		queryText.setText(queryModelText == null ? "" : queryModelText);
 
-		createOrderWidget(composite);
 		createUpdateButton(composite);
 
 		if (getQuery() != null) {
@@ -179,29 +164,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			}
 
 		});
-
-	}
-
-	private void createOrderWidget(Composite parent) {
-		new Label(parent, SWT.LEFT).setText("Order By:");
-		order = new Combo(parent, SWT.READ_ONLY);
-
-		order.setItems(GitHubRepositoryQueryPage.getOrderLabel());
-		GridData orderGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		orderGridData.horizontalSpan = 2;
-		order.setLayoutData(orderGridData);
-		order.select(0);
-		String queryModelStatus = getQuery() == null ? null : getQuery()
-				.getAttribute(ATTR_QUERY_ORDER);
-		if (queryModelStatus != null) {
-			for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler
-					.values()) {
-				if (handler.getLabel().equalsIgnoreCase(queryModelStatus)) {
-					order.select(handler.getIndex());
-					break;
-				}
-			}
-		}
 
 	}
 

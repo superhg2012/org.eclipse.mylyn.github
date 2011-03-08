@@ -64,7 +64,9 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 				// though it does allow for creating them. Silly really.
 				// see
 				// http://support.github.com/discussions/feature-requests/696-issues-api-improvement
-				// descriptorIt.remove();
+				descriptorIt.remove();
+			} else if (partDescriptor.getId().equals(ID_PART_PEOPLE)) {
+				descriptorIt.remove();
 			}
 		}
 		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_ATTRIBUTES) {
@@ -73,6 +75,18 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 				return new GitHubAttributesTaskEditorPart();
 			}
 		}.setPath(PATH_ATTRIBUTES));
+		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_PEOPLE) {
+			@Override
+			public AbstractTaskEditorPart createPart() {
+				return new GitHubPeopleTaskEditorPart();
+			}
+		}.setPath(PATH_PEOPLE));
+		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_COMMENTS) {
+			@Override
+			public AbstractTaskEditorPart createPart() {
+				return new GitHubCommentsTaskEditorPart();
+			}
+		}.setPath(PATH_COMMENTS));
 		return partDescriptors;
 	}
 

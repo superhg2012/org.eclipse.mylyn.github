@@ -14,7 +14,8 @@ public enum GitHubTaskAttributes {
 	
 	STATUS("Status",TaskAttribute.STATUS,TaskAttribute.TYPE_SHORT_TEXT,true,false,true),
 	LABEL("Label", GitHub.GITHUB_TASK_LABEL, TaskAttribute.TYPE_SHORT_TEXT, true, false, true),
-	VOTES("Votes", GitHub.GITHUB_TASK_VOTES, TaskAttribute.TYPE_SHORT_TEXT, true, false, true)
+	VOTES("Votes", GitHub.GITHUB_TASK_VOTES, TaskAttribute.TYPE_SHORT_TEXT, true, false, true),
+	REPORTED_BY("Reported by", TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_PERSON, true, true, true)
 	;
 	
 

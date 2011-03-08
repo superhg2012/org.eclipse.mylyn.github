@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.logging.Log;
@@ -533,6 +534,35 @@ public class GitHubService {
 		}
 
 		return labels.getLabes();
+	}
 
+	/**
+	 * Retrieve a GitHub user;
+	 * 
+	 * @param username
+	 * @return
+	 * @throws GitHubServiceException
+	 * @note API doc: /user/show/:username [GET]
+	 */
+	public GitHubUser retriveUser(String username)
+			throws GitHubServiceException {
+		GetMethod method = null;
+		method = new GetMethod(API_URL_BASE + API_USER_ROOT + "show/"
+				+ username);
+		GitHubUser user = null;
+		try {
+			executeMethod(method);
+			String response = new String(method.getResponseBody());
+			user = gson.fromJson(response, GitHubUser.class);
+		} catch (IOException e) {
+			throw new GitHubServiceException(
+					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
+		} finally {
+			if (method != null) {
+				method.releaseConnection();
+			}
+		}
+
+		return user;
 	}
 }

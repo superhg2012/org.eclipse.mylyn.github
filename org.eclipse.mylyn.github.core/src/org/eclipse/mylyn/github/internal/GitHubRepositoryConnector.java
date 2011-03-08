@@ -21,8 +21,6 @@ import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.build
 import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryUser;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -137,19 +135,17 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 					.getCredentials(AuthenticationType.REPOSITORY);
 			GitHubCredentials credentials = new GitHubCredentials(auth);
 			String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
-			List<GitHubIssue> filteredAndOrderedIssues = new ArrayList<GitHubIssue>();
+			List<GitHubIssue> filteredIssues = new ArrayList<GitHubIssue>();
 			for (String status : statuses) {
 				GitHubIssues issues = service.searchIssues(user, project,
 						status,
 						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
 						credentials);
 				
-				filteredAndOrderedIssues.addAll(issues.getIssuesLabeled(label));
+				filteredIssues.addAll(issues.getIssuesLabeled(label));
 			}
-			String orderBy = query.getAttribute(GitHub.QUERY_TEXT_ORDER);
-			orderIssues(filteredAndOrderedIssues, orderBy);
-
-			for (GitHubIssue issue : filteredAndOrderedIssues) {
+			
+			for (GitHubIssue issue : filteredIssues) {
 				TaskData taskData = taskDataHandler.createTaskData(
 						repository, monitor, user, project, issue, true);
 				collector.accept(taskData);
@@ -163,18 +159,6 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		return result;
 	}
 
-	private void orderIssues(List<GitHubIssue> issuesLabeled, String orderBy) {
-		Comparator<GitHubIssue> orderHandler = null;
-		for (GitHubIssueOrderHandler handler : GitHubIssueOrderHandler.values()) {
-			if (handler.getLabel().equalsIgnoreCase(orderBy)) {
-				orderHandler = handler.getComparator();
-				break;
-			}
-		}
-		if (orderHandler != null) {
-			Collections.sort(issuesLabeled, orderHandler);
-		}
-	}
 
 	@Override
 	public final TaskData getTaskData(TaskRepository repository, String taskId,

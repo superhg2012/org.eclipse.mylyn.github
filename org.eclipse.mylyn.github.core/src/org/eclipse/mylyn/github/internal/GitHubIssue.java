@@ -65,13 +65,14 @@ public class GitHubIssue {
 	 *            - The text body of the issue;
 	 */
 	public GitHubIssue(final String number, final String user,
-			final String title, final String body, final Integer comments,
+			final String title, final String body, final Integer comments, Integer votes,
 			final List<String> labels) {
 		this.number = number;
 		this.user = user;
 		this.title = title;
 		this.body = body;
 		this.comments = comments;
+		this.votes = votes;
 		this.labels = labels;
 	}
 
@@ -209,11 +210,12 @@ public class GitHubIssue {
 		return labels;
 	}
 
-	public void setVotes(Integer votes) {
+	public final void setVotes(Integer votes) {
 		this.votes = votes;
 	}
 
-	public Integer getVotes() {
+	public final Integer getVotes() {
 		return votes;
 	}
+
 }
