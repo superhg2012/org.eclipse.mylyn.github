@@ -140,7 +140,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 						status,
 						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE), auth);
 
-				filteredIssues.addAll(issues.getIssuesLabeled(label));
+				filteredIssues.addAll(issues
+						.getIssuesLabeled(label == null ? "all" : label));
 			}
 
 			for (GitHubIssue issue : filteredIssues) {

@@ -48,6 +48,9 @@ import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
  */
 public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 
+	private static final int GROUP_TASK_ID = 3;
+	private static final int GROUP_PROJECT = 2;
+	private static final int GROUP_USER = 1;
 	private final Pattern issuePattern = Pattern
 			.compile("(?:([a-zA-Z0-9_\\.-]+)(?:/([a-zA-Z0-9_\\.-]+))?)?\\#(\\d+)");
 
@@ -119,9 +122,9 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 		while (matcher.find()) {
 			if (index == -1
 					|| (index >= matcher.start() && index <= matcher.end())) {
-				String user = matcher.group(1);
-				String project = matcher.group(2);
-				String taskId = matcher.group(3);
+				String user = matcher.group(GROUP_USER);
+				String project = matcher.group(GROUP_PROJECT);
+				String taskId = matcher.group(GROUP_TASK_ID);
 
 				if (project == null && user != null) {
 					String url = repository.getUrl();

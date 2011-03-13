@@ -272,7 +272,7 @@ public class GitHubService {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(OPEN).append(user).append("/")
 				.append(repo);
-		return openIssue(uri.toString(), issue, credentials);
+		return retrieveIssue(uri.toString(), issue, credentials);
 	}
 
 	/**
@@ -299,11 +299,11 @@ public class GitHubService {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(EDIT).append(user).append("/")
 				.append(repo).append("/").append(issue.getNumber());
-		return openIssue(uri.toString(), issue, credentials);
+		return retrieveIssue(uri.toString(), issue, credentials);
 	}
 
-	private GitHubIssue openIssue(final String uri, final GitHubIssue issue,
-			final AuthenticationCredentials credentials)
+	private GitHubIssue retrieveIssue(final String uri,
+			final GitHubIssue issue, final AuthenticationCredentials credentials)
 			throws GitHubServiceException {
 		PostMethod method = null;
 		try {
@@ -363,10 +363,17 @@ public class GitHubService {
 			method = new PostMethod(uri.toString());
 			method.setRequestBody(getCredentials(credentials));
 			executeMethod(method);
-			GitHubShowIssue issue = gson
+			GitHubShowIssue showIssue = gson
 					.fromJson(new String(method.getResponseBody()),
 							GitHubShowIssue.class);
-			return issue.getIssue();
+			if (showIssue == null || showIssue.getIssue() == null) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("Unexpected server response: "
+							+ method.getResponseBodyAsString());
+				}
+				throw new GitHubServiceException("Unexpected server response");
+			}
+			return showIssue.getIssue();
 		} catch (JsonSyntaxException e) {
 			throw new GitHubServiceException(
 					FAILED_TO_DESERIALIZE_JSON_OBJECT_EXCEPTION_MESSAGE, e);

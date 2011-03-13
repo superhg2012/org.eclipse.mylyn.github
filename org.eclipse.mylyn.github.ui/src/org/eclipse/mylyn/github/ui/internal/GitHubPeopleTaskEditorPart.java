@@ -31,7 +31,6 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 		Section section = createSection(parent, toolkit, true);
 		Composite peopleComposite = toolkit.createComposite(section);
 		GridLayout layout = new GridLayout(2, false);
-		layout.marginWidth = 5;
 		peopleComposite.setLayout(layout);
 		addAttribute(peopleComposite, toolkit, getTaskData().getRoot().getMappedAttribute(TaskAttribute.USER_ASSIGNED));
 		toolkit.paintBordersFor(peopleComposite);

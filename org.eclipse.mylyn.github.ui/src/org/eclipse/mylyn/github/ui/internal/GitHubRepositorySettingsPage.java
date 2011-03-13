@@ -108,6 +108,9 @@ public class GitHubRepositorySettingsPage extends
 	}
 
 	private final class SettingsValidator extends Validator {
+		private static final int MONITOR_PROGRESS_400 = 400;
+		private static final int MONITOR_PROGRESS_100 = 100;
+		private static final int MONITOR_PROGRESS_1000 = 1000;
 		private final TaskRepository taskRepository;
 
 		protected SettingsValidator(TaskRepository repository) {
@@ -116,7 +119,7 @@ public class GitHubRepositorySettingsPage extends
 
 		@Override
 		public void run(IProgressMonitor monitor) throws CoreException {
-			int totalWork = 1000;
+			int totalWork = MONITOR_PROGRESS_1000;
 			monitor.beginTask("Validating settings", totalWork);
 			try {
 				String urlText = taskRepository.getUrl();
@@ -127,7 +130,7 @@ public class GitHubRepositorySettingsPage extends
 							.createErrorStatus("Server URL must be in the form http://github.com/user/project or\nhttps://github.com/user/project"));
 					return;
 				}
-				monitor.worked(100);
+				monitor.worked(MONITOR_PROGRESS_100);
 				String user = urlMatcher.group(1);
 				String repo = urlMatcher.group(2);
 				AuthenticationCredentials auth = taskRepository
@@ -137,7 +140,7 @@ public class GitHubRepositorySettingsPage extends
 				try {
 					// verify the repo
 					service.searchIssues(user, repo, "open", "", auth);
-					monitor.worked(400);
+					monitor.worked(MONITOR_PROGRESS_400);
 					// verify the credentials
 					if (auth == null) {
 						setStatus(GitHubUi
