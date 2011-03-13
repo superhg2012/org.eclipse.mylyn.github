@@ -27,7 +27,7 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 	}
 
 	@Override
-	public void createControl(Composite parent, FormToolkit toolkit) {
+	public final void createControl(Composite parent, FormToolkit toolkit) {
 		Section section = createSection(parent, toolkit, true);
 		Composite peopleComposite = toolkit.createComposite(section);
 		GridLayout layout = new GridLayout(2, false);

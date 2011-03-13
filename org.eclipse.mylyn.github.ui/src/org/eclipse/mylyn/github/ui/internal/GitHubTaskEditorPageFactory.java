@@ -39,7 +39,7 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	private Image gitLogoImage = null;
 
 	@Override
-	public boolean canCreatePageFor(TaskEditorInput input) {
+	public final boolean canCreatePageFor(TaskEditorInput input) {
 		if (GitHub.CONNECTOR_KIND.equals(input.getTask().getConnectorKind())) {
 			return true;
 		}
@@ -51,7 +51,7 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	}
 
 	@Override
-	public Image getPageImage() {
+	public final Image getPageImage() {
 		if (gitLogoImage != null) {
 			return gitLogoImage;
 		}
@@ -68,22 +68,22 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	}
 
 	@Override
-	public String getPageText() {
+	public final String getPageText() {
 		return "GitHub";
 	}
 
 	@Override
-	public int getPriority() {
+	public final int getPriority() {
 		return PRIORITY_TASK;
 	}
 
 	@Override
-	public IFormPage createPage(TaskEditor parentEditor) {
+	public final IFormPage createPage(TaskEditor parentEditor) {
 		return new GitHubTaskEditorPage(parentEditor);
 	}
 
 	@Override
-	public String[] getConflictingIds(TaskEditorInput input) {
+	public final String[] getConflictingIds(TaskEditorInput input) {
 		return new String[] { ITasksUiConstants.ID_PAGE_PLANNING };
 	}
 

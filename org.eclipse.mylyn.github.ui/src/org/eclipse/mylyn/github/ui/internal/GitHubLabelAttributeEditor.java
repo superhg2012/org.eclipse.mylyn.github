@@ -30,7 +30,7 @@ public class GitHubLabelAttributeEditor extends
 	}
 
 	@Override
-	public List<String> getValues() {
+	public final List<String> getValues() {
 		List<String> values = new ArrayList<String>();
 		String selectedLabels = getAttributeMapper().getValue(
 				getTaskAttribute());
@@ -43,7 +43,7 @@ public class GitHubLabelAttributeEditor extends
 	}
 
 	@Override
-	public void setValues(List<String> newValues) {
+	public final void setValues(List<String> newValues) {
 		StringBuilder sb = new StringBuilder();
 		Collections.sort(newValues);
 		for (int i = 0; i < newValues.size(); i++) {

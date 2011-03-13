@@ -52,7 +52,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 	}
 
 	@Override
-	protected Set<TaskEditorPartDescriptor> createPartDescriptors() {
+	protected final Set<TaskEditorPartDescriptor> createPartDescriptors() {
 		Set<TaskEditorPartDescriptor> partDescriptors = super
 				.createPartDescriptors();
 		Iterator<TaskEditorPartDescriptor> descriptorIt = partDescriptors
@@ -82,7 +82,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 	}
 
 	@Override
-	protected AttributeEditorFactory createAttributeEditorFactory() {
+	protected final AttributeEditorFactory createAttributeEditorFactory() {
 		return new GitHubAttributeEditorFactory(getModel(),
 				getTaskRepository(), getEditorSite());
 	}
@@ -115,7 +115,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		}
 	}
 
-	private final static class GitHubAtrributesTaskEditorPartDescriptor extends
+	private static final class GitHubAtrributesTaskEditorPartDescriptor extends
 			TaskEditorPartDescriptor {
 		public GitHubAtrributesTaskEditorPartDescriptor() {
 			super(ID_PART_ATTRIBUTES);
@@ -127,7 +127,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		}
 	}
 
-	private final static class GitHubPeopleTaskEditorPartDescriptor extends
+	private static final class GitHubPeopleTaskEditorPartDescriptor extends
 			TaskEditorPartDescriptor {
 
 		public GitHubPeopleTaskEditorPartDescriptor() {

@@ -47,6 +47,12 @@ import org.eclipse.swt.widgets.Text;
  */
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
+	private static final int GRID_LAYOUT_SPAN_THREE_COLUMNS = 3;
+	private static final int GRID_LAYOUT_MARGIN_ZERO_PIXELS = 0;
+	private static final int GRID_LAYOUT_SPACING_EIGHT_PIXELS = 8;
+	private static final int GRID_LAYOUT_LEFT_MARGIN_TWENTY_FIVE_PIXELS = 25;
+	private static final int GRID_LAYOUT_VERTICAL_MARGIN_TWENTY_PIXELS = 20;
+	private static final int GRID_LAYOUT_FOUR_COLUMNS = 4;
 	private static final String ATTR_QUERY_TEXT = "queryText";
 	private static final String ATTR_QUERY_STATUS = "status";
 	private static final String ATTR_QUERY_LABEL = "queryLabel";
@@ -75,12 +81,12 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	}
 
 	@Override
-	public String getQueryTitle() {
+	public final String getQueryTitle() {
 		return queryTitle.getText();
 	}
 
 	@Override
-	public void applyTo(IRepositoryQuery query) {
+	public final void applyTo(IRepositoryQuery query) {
 		query.setSummary(queryTitle.getText());
 		query.setAttribute(ATTR_QUERY_STATUS, status.getText());
 		query.setAttribute(ATTR_QUERY_TEXT, queryText.getText());
@@ -91,17 +97,17 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	 * 
 	 * 
 	 */
-	public void createControl(Composite parent) {
+	public final void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(4, false);
+		GridLayout gridLayout = new GridLayout(GRID_LAYOUT_FOUR_COLUMNS, false);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		composite.setLayoutData(gd);
-		gridLayout.marginTop = 20;
-		gridLayout.marginLeft = 25;
-		gridLayout.verticalSpacing = 8;
-		gridLayout.horizontalSpacing = 8;
-		gridLayout.marginWidth = 0;
-		gridLayout.marginHeight = 0;
+		gridLayout.marginTop = GRID_LAYOUT_VERTICAL_MARGIN_TWENTY_PIXELS;
+		gridLayout.marginLeft = GRID_LAYOUT_LEFT_MARGIN_TWENTY_FIVE_PIXELS;
+		gridLayout.verticalSpacing = GRID_LAYOUT_SPACING_EIGHT_PIXELS;
+		gridLayout.horizontalSpacing = GRID_LAYOUT_SPACING_EIGHT_PIXELS;
+		gridLayout.marginWidth = GRID_LAYOUT_MARGIN_ZERO_PIXELS;
+		gridLayout.marginHeight = GRID_LAYOUT_MARGIN_ZERO_PIXELS;
 		composite.setLayout(gridLayout);
 
 		ModifyListener modifyListener = new ModifyListener() {
@@ -114,7 +120,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		new Label(composite, SWT.LEFT).setText("Query Title:");
 		queryTitle = new Text(composite, SWT.BORDER);
 		GridData titleGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		titleGridData.horizontalSpan = 3;
+		titleGridData.horizontalSpan = GRID_LAYOUT_SPAN_THREE_COLUMNS;
 		queryTitle.setLayoutData(titleGridData);
 		queryTitle.addModifyListener(modifyListener);
 		queryTitle.setFocus();
@@ -125,7 +131,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		new Label(composite, SWT.LEFT).setText("Query Text:");
 		queryText = new Text(composite, SWT.BORDER);
 		GridData textGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		textGridData.horizontalSpan = 3;
+		textGridData.horizontalSpan = GRID_LAYOUT_SPAN_THREE_COLUMNS;
 		queryText.setLayoutData(textGridData);
 		String queryModelText = getQuery() == null ? null : getQuery()
 				.getAttribute(ATTR_QUERY_TEXT);
@@ -239,7 +245,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
+	public final void setVisible(boolean visible) {
 		super.setVisible(visible);
 
 		if (getSearchContainer() != null) {
@@ -264,7 +270,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	}
 
 	@Override
-	public boolean isPageComplete() {
+	public final boolean isPageComplete() {
 		if (queryTitle != null && queryTitle.getText().length() > 0) {
 			return true;
 		}

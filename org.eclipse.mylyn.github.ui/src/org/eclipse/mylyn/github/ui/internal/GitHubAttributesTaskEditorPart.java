@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class GitHubAttributesTaskEditorPart extends AbstractTaskEditorPart {
 	private static final int COLUMN_MARGIN = 5;
+	private static final int GRID_LAYOUT_FOUR_COLUMNS = 4;
 
 	public GitHubAttributesTaskEditorPart() {
 		setPartName("Attributes");
@@ -29,11 +30,10 @@ public class GitHubAttributesTaskEditorPart extends AbstractTaskEditorPart {
 	}
 
 	@Override
-	public void createControl(Composite parent, FormToolkit toolkit) {
+	public final void createControl(Composite parent, FormToolkit toolkit) {
 		Section section = createSection(parent, toolkit, true);
 		Composite attributesComposite = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout(4, false);
-		layout.marginWidth = 5;
+		GridLayout layout = new GridLayout(GRID_LAYOUT_FOUR_COLUMNS, false);
 		attributesComposite.setLayout(layout);
 
 		addAttribute(attributesComposite, toolkit, getTaskData().getRoot()

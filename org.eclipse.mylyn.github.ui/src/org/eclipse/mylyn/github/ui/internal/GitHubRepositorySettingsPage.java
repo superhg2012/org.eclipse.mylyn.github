@@ -63,12 +63,12 @@ public class GitHubRepositorySettingsPage extends
 	}
 
 	@Override
-	public String getConnectorKind() {
+	public final String getConnectorKind() {
 		return GitHub.CONNECTOR_KIND;
 	}
 
 	@Override
-	protected void createAdditionalControls(Composite parent) {
+	protected final void createAdditionalControls(Composite parent) {
 		// Set the URL now, because serverURL is definitely instantiated .
 		if (serverUrlCombo != null
 				&& (serverUrlCombo.getText() == null || serverUrlCombo
@@ -95,12 +95,12 @@ public class GitHubRepositorySettingsPage extends
 	}
 
 	@Override
-	protected Validator getValidator(final TaskRepository repository) {
+	protected final Validator getValidator(final TaskRepository repository) {
 		return new SettingsValidator(repository);
 	}
 
 	@Override
-	protected boolean isValidUrl(final String url) {
+	protected final boolean isValidUrl(final String url) {
 		if (url.contains("github")) {
 			return true;
 		}
