@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
 import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.github.internal.GitHub;
-import org.eclipse.mylyn.github.internal.GitHubCredentials;
 import org.eclipse.mylyn.github.internal.GitHubService;
 import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -113,44 +112,44 @@ public class GitHubRepositorySettingsPage extends
 						return;
 					}
 					monitor.worked(100);
-
-					String user = urlMatcher.group(1);
-					String repo = urlMatcher.group(2);
-					AuthenticationCredentials auth = repository
-							.getCredentials(AuthenticationType.REPOSITORY);
-					GitHubCredentials credentials = new GitHubCredentials(auth);
-
-					GitHubService service = new GitHubService();
-
-					monitor.subTask("Contacting server...");
-					try {
-						// verify the repo
-						service.searchIssues(user, repo, "open", "",
-								credentials);
-						monitor.worked(400);
-
-						// verify the credentials
-						if (auth == null) {
-							setStatus(GitHubUi
-									.createErrorStatus("Credentials are required.  Please specify username and API Token."));
-							return;
-						}
-						if (!service.verifyCredentials(credentials)) {
-							setStatus(GitHubUi
-									.createErrorStatus("Invalid credentials.  Please check your GitHub User ID and API Token.\nYou can find your API Token on your GitHub account settings page."));
-							return;
-						}
-					} catch (GitHubServiceException e) {
-						setStatus(GitHubUi
-								.createErrorStatus("Repository Test failed:"
-										+ e.getMessage()));
-						return;
+					checkService(repository, monitor, urlMatcher);
+					if (!getStatus().equals(IStatus.ERROR)) {
+						setStatus(new Status(IStatus.OK, GitHubUi.BUNDLE_ID,
+								"Success!"));
 					}
-
-					setStatus(new Status(IStatus.OK, GitHubUi.BUNDLE_ID,
-							"Success!"));
 				} finally {
 					monitor.done();
+				}
+			}
+
+			private void checkService(final TaskRepository repository,
+					IProgressMonitor monitor, Matcher urlMatcher) {
+				String user = urlMatcher.group(1);
+				String repo = urlMatcher.group(2);
+				AuthenticationCredentials auth = repository
+						.getCredentials(AuthenticationType.REPOSITORY);
+				GitHubService service = new GitHubService();
+				monitor.subTask("Contacting server...");
+				try {
+					// verify the repo
+					service.searchIssues(user, repo, "open", "", auth);
+					monitor.worked(400);
+					// verify the credentials
+					if (auth == null) {
+						setStatus(GitHubUi
+								.createErrorStatus("Credentials are required.  Please specify username and API Token."));
+						return;
+					}
+					if (!service.verifyCredentials(auth)) {
+						setStatus(GitHubUi
+								.createErrorStatus("Invalid credentials.  Please check your GitHub User ID and API Token.\nYou can find your API Token on your GitHub account settings page."));
+						return;
+					}
+				} catch (GitHubServiceException e) {
+					setStatus(GitHubUi
+							.createErrorStatus("Repository Test failed:"
+									+ e.getMessage()));
+					return;
 				}
 			}
 		};

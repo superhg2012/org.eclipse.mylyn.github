@@ -11,5 +11,6 @@ Require-Bundle: org.junit4;bundle-version="4.5.0",
  org.eclipse.equinox.security;bundle-version="1.0.100",
  org.eclipse.mylyn.github.core;bundle-version="0.2.2",
  org.eclipse.mylyn.github.ui;bundle-version="0.2.2",
- org.eclipse.mylyn.tasks.ui;bundle-version="3.4.3"
+ org.eclipse.mylyn.tasks.ui;bundle-version="3.4.3",
+ org.eclipse.mylyn.commons.net;bundle-version="3.4.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

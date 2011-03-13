@@ -12,7 +12,7 @@ import java.util.Collection;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class CollectionUtils {
+public final class CollectionUtils {
 
 	private CollectionUtils() {
 

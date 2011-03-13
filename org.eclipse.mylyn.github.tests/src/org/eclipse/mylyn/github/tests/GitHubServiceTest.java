@@ -19,7 +19,7 @@ package org.eclipse.mylyn.github.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.mylyn.github.internal.GitHubCredentials;
+import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
 import org.eclipse.mylyn.github.internal.GitHubIssue;
 import org.eclipse.mylyn.github.internal.GitHubIssues;
 import org.eclipse.mylyn.github.internal.GitHubService;
@@ -51,8 +51,8 @@ public class GitHubServiceTest {
 	@Test
 	public final void verifyCredentials() throws GitHubServiceException {
 		GitHubService service = new GitHubService();
-		assertTrue(service.verifyCredentials(new GitHubCredentials(TEST_USER,
-				API_KEY)));
+		assertTrue(service.verifyCredentials(new AuthenticationCredentials(
+				TEST_USER, API_KEY)));
 	}
 
 	/**
@@ -64,11 +64,10 @@ public class GitHubServiceTest {
 	public final void searchIssues() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
-				TEST_PROJECT, "open", "test", new GitHubCredentials(TEST_USER,
-						API_KEY));
+				TEST_PROJECT, "open", "test", new AuthenticationCredentials(
+						TEST_USER, API_KEY));
 		assertEquals(0, issues.getIssues().size());
 	}
-
 
 	/**
 	 * Test the GitHubService issue searching implementation, multiple query
@@ -81,8 +80,8 @@ public class GitHubServiceTest {
 			throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final GitHubIssues issues = service.searchIssues(TEST_USER,
-				TEST_PROJECT, "open", "task or issue", new GitHubCredentials(
-						TEST_USER, API_KEY));
+				TEST_PROJECT, "open", "task or issue",
+				new AuthenticationCredentials(TEST_USER, API_KEY));
 		assertEquals(0, issues.getIssues().size());
 	}
 
@@ -99,7 +98,8 @@ public class GitHubServiceTest {
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
 		GitHubIssue newIssue = service.openIssueForView(TEST_USER,
-				TEST_PROJECT, issue, new GitHubCredentials(TEST_USER, API_KEY));
+				TEST_PROJECT, issue, new AuthenticationCredentials(TEST_USER,
+						API_KEY));
 		assertTrue(newIssue != null);
 		assertEquals(issue.getUser(), newIssue.getUser());
 		assertEquals(issue.getBody(), newIssue.getBody());
@@ -121,18 +121,19 @@ public class GitHubServiceTest {
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
 		GitHubIssue newIssue = service.openIssueForView(TEST_USER,
-				TEST_PROJECT, issue, new GitHubCredentials(TEST_USER, API_KEY));
+				TEST_PROJECT, issue, new AuthenticationCredentials(TEST_USER,
+						API_KEY));
 		assertTrue(newIssue != null);
 
 		newIssue.setTitle(newIssue.getTitle() + " - modified");
 		newIssue.setBody(newIssue.getBody() + " - modified");
-		GitHubCredentials credentials = new GitHubCredentials(TEST_USER,
-				API_KEY);
 
-		service.openIssueForEdit(TEST_USER, TEST_PROJECT, newIssue, credentials);
+		service.openIssueForEdit(TEST_USER, TEST_PROJECT, newIssue,
+				new AuthenticationCredentials(TEST_USER, API_KEY));
 
 		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT,
-				newIssue.getNumber(), credentials);
+				newIssue.getNumber(), new AuthenticationCredentials(TEST_USER,
+						API_KEY));
 
 		assertTrue(showIssue != null);
 		assertEquals(newIssue.getTitle(), showIssue.getTitle());
@@ -148,7 +149,7 @@ public class GitHubServiceTest {
 	public final void addLabel() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, new GitHubCredentials(TEST_USER, API_KEY));
+				"lame", 1, new AuthenticationCredentials(TEST_USER, API_KEY));
 		assertTrue(result);
 	}
 
@@ -162,7 +163,7 @@ public class GitHubServiceTest {
 	public final void removeLable() throws GitHubServiceException {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, new GitHubCredentials(TEST_USER, API_KEY));
+				"lame", 1, new AuthenticationCredentials(TEST_USER, API_KEY));
 		assertTrue(result);
 	}
 

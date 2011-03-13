@@ -133,21 +133,19 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			String project = buildTaskRepositoryProject(repository.getUrl());
 			AuthenticationCredentials auth = repository
 					.getCredentials(AuthenticationType.REPOSITORY);
-			GitHubCredentials credentials = new GitHubCredentials(auth);
 			String label = query.getAttribute(GitHub.QUERY_TEXT_LABEL);
 			List<GitHubIssue> filteredIssues = new ArrayList<GitHubIssue>();
 			for (String status : statuses) {
 				GitHubIssues issues = service.searchIssues(user, project,
 						status,
-						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE),
-						credentials);
-				
+						query.getAttribute(GitHub.QUERY_TEXT_ATTRIBUTE), auth);
+
 				filteredIssues.addAll(issues.getIssuesLabeled(label));
 			}
-			
+
 			for (GitHubIssue issue : filteredIssues) {
-				TaskData taskData = taskDataHandler.createTaskData(
-						repository, monitor, user, project, issue, true);
+				TaskData taskData = taskDataHandler.createTaskData(repository,
+						monitor, user, project, issue, true);
 				collector.accept(taskData);
 			}
 			monitor.worked(1);
@@ -159,7 +157,6 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		return result;
 	}
 
-
 	@Override
 	public final TaskData getTaskData(TaskRepository repository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
@@ -168,10 +165,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		String project = buildTaskRepositoryProject(repository.getUrl());
 		AuthenticationCredentials auth = repository
 				.getCredentials(AuthenticationType.REPOSITORY);
-		GitHubCredentials credentials = new GitHubCredentials(auth);
 		try {
-			GitHubIssue issue = service.showIssue(user, project, taskId,
-					credentials);
+			GitHubIssue issue = service.showIssue(user, project, taskId, auth);
 			TaskData taskData = taskDataHandler.createTaskData(repository,
 					monitor, user, project, issue, false);
 

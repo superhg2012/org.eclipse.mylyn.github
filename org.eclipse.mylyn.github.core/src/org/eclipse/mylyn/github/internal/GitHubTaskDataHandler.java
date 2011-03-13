@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
+import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
@@ -103,8 +105,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		try {
 
 			GitHubService service = connector.getService();
-			GitHubCredentials credentials = GitHubCredentials
-					.create(repository);
+			AuthenticationCredentials credentials = repository
+					.getCredentials(AuthenticationType.REPOSITORY);
 			if (taskData.isNew()) {
 				issue = service
 						.openIssueForView(user, repo, issue, credentials);

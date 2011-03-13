@@ -81,7 +81,8 @@ public class GitHubService {
 	 * 
 	 * @return true if and only if the credentials are correct
 	 */
-	public final boolean verifyCredentials(GitHubCredentials credentials)
+	public final boolean verifyCredentials(
+			final AuthenticationCredentials credentials)
 			throws GitHubServiceException {
 		PostMethod method = null;
 		boolean success = false;
@@ -122,7 +123,8 @@ public class GitHubService {
 	 */
 	public final GitHubIssues searchIssues(final String user,
 			final String repo, final String state, final String searchTerm,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		GitHubIssues issues = null;
 		PostMethod method = null;
 		try {
@@ -175,7 +177,8 @@ public class GitHubService {
 	 */
 	public final boolean addLabel(final String user, final String repo,
 			final String label, final int issueNumber,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		PostMethod method = null;
 		boolean success = false;
 		try {
@@ -219,7 +222,8 @@ public class GitHubService {
 	 */
 	public final boolean removeLabel(final String user, final String repo,
 			final String label, final int issueNumber,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		PostMethod method = null;
 		boolean success = false;
 		try {
@@ -262,7 +266,8 @@ public class GitHubService {
 	 */
 	public final GitHubIssue openIssueForView(final String user,
 			final String repo, final GitHubIssue issue,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(OPEN).append(user).append("/")
@@ -289,7 +294,8 @@ public class GitHubService {
 	 */
 	public final GitHubIssue openIssueForEdit(final String user,
 			final String repo, final GitHubIssue issue,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(EDIT).append(user).append("/")
 				.append(repo).append("/").append(issue.getNumber());
@@ -297,7 +303,8 @@ public class GitHubService {
 	}
 
 	private GitHubIssue openIssue(final String uri, final GitHubIssue issue,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		PostMethod method = null;
 		try {
 			method = new PostMethod(uri);
@@ -344,7 +351,8 @@ public class GitHubService {
 	 *             - in case that the get operation is failing
 	 */
 	public final GitHubIssue showIssue(final String user, final String repo,
-			final String issueNumber, final GitHubCredentials credentials)
+			final String issueNumber,
+			final AuthenticationCredentials credentials)
 			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(SHOW).append(user).append("/")
@@ -392,7 +400,7 @@ public class GitHubService {
 	 *             Variables: login, api-token, title, body
 	 */
 	public final GitHubIssue reopenIssue(String user, String repo,
-			GitHubIssue issue, GitHubCredentials credentials)
+			GitHubIssue issue, AuthenticationCredentials credentials)
 			throws GitHubServiceException {
 		GitHubIssue editedIssue = openIssueForEdit(user, repo, issue,
 				credentials);
@@ -418,7 +426,7 @@ public class GitHubService {
 	 *             login, api-token, title, body
 	 */
 	public final GitHubIssue closeIssue(String user, String repo,
-			GitHubIssue issue, GitHubCredentials credentials)
+			GitHubIssue issue, AuthenticationCredentials credentials)
 			throws GitHubServiceException {
 		GitHubIssue editedIssue = openIssueForEdit(user, repo, issue,
 				credentials);
@@ -428,7 +436,8 @@ public class GitHubService {
 
 	private GitHubIssue changeIssueStatus(final String user, final String repo,
 			String githubOperation, final GitHubIssue issue,
-			final GitHubCredentials credentials) throws GitHubServiceException {
+			final AuthenticationCredentials credentials)
+			throws GitHubServiceException {
 		PostMethod method = null;
 		try {
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT
@@ -479,20 +488,20 @@ public class GitHubService {
 		}
 	}
 
-	private NameValuePair[] getCredentials(GitHubCredentials credentials) {
+	private NameValuePair[] getCredentials(AuthenticationCredentials credentials) {
 		final NameValuePair login = new NameValuePair("login",
-				credentials.getUsername());
+				credentials.getUserName());
 		final NameValuePair token = new NameValuePair("token",
-				credentials.getApiToken());
+				credentials.getPassword());
 		return new NameValuePair[] { login, token };
 	}
 
 	private NameValuePair[] createRequestBody(final GitHubIssue issue,
-			final GitHubCredentials credentials) {
+			final AuthenticationCredentials credentials) {
 		final NameValuePair login = new NameValuePair("login",
-				credentials.getUsername());
+				credentials.getUserName());
 		final NameValuePair token = new NameValuePair("token",
-				credentials.getApiToken());
+				credentials.getPassword());
 		final NameValuePair body = new NameValuePair("body", issue.getBody());
 		final NameValuePair title = new NameValuePair("title", issue.getTitle());
 		return new NameValuePair[] { login, token, body, title };
@@ -512,14 +521,13 @@ public class GitHubService {
 		PostMethod method = null;
 		AuthenticationCredentials auth = repository
 				.getCredentials(AuthenticationType.REPOSITORY);
-		GitHubCredentials credentials = new GitHubCredentials(auth);
 		String project = buildTaskRepositoryProject(repository.getUrl());
 		GitHubLabels labels = null;
 		try {
 			method = new PostMethod(API_URL_BASE + API_ISSUES_ROOT + "labels/"
-					+ credentials.getUsername() + "/" + project);
+					+ auth.getUserName() + "/" + project);
 
-			method.setRequestBody(getCredentials(credentials));
+			method.setRequestBody(getCredentials(auth));
 			executeMethod(method);
 			String response = method.getResponseBodyAsString();
 			labels = gson.fromJson(response, GitHubLabels.class);
