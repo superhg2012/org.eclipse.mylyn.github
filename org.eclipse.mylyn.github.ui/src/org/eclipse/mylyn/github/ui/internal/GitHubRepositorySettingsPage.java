@@ -96,37 +96,41 @@ public class GitHubRepositorySettingsPage extends
 
 	@Override
 	protected Validator getValidator(final TaskRepository repository) {
-		Validator validator = new Validator() {
-			@Override
-			public void run(IProgressMonitor monitor) throws CoreException {
-				int totalWork = 1000;
-				monitor.beginTask("Validating settings", totalWork);
-				try {
+		return new SettingsValidator(repository);
+	}
 
-					String urlText = repository.getUrl();
-					Matcher urlMatcher = GitHub.URL_PATTERN
-							.matcher(urlText == null ? "" : urlText);
-					if (!urlMatcher.matches()) {
-						setStatus(GitHubUi
-								.createErrorStatus("Server URL must be in the form http://github.com/user/project or\nhttps://github.com/user/project"));
-						return;
-					}
-					monitor.worked(100);
-					checkService(repository, monitor, urlMatcher);
-					if (!getStatus().equals(IStatus.ERROR)) {
-						setStatus(new Status(IStatus.OK, GitHubUi.BUNDLE_ID,
-								"Success!"));
-					}
-				} finally {
-					monitor.done();
+	@Override
+	protected boolean isValidUrl(final String url) {
+		if (url.contains("github")) {
+			return true;
+		}
+		return false;
+	}
+
+	private final class SettingsValidator extends Validator {
+		private final TaskRepository taskRepository;
+
+		protected SettingsValidator(TaskRepository repository) {
+			this.taskRepository = repository;
+		}
+
+		@Override
+		public void run(IProgressMonitor monitor) throws CoreException {
+			int totalWork = 1000;
+			monitor.beginTask("Validating settings", totalWork);
+			try {
+				String urlText = taskRepository.getUrl();
+				Matcher urlMatcher = GitHub.URL_PATTERN
+						.matcher(urlText == null ? "" : urlText);
+				if (!urlMatcher.matches()) {
+					setStatus(GitHubUi
+							.createErrorStatus("Server URL must be in the form http://github.com/user/project or\nhttps://github.com/user/project"));
+					return;
 				}
-			}
-
-			private void checkService(final TaskRepository repository,
-					IProgressMonitor monitor, Matcher urlMatcher) {
+				monitor.worked(100);
 				String user = urlMatcher.group(1);
 				String repo = urlMatcher.group(2);
-				AuthenticationCredentials auth = repository
+				AuthenticationCredentials auth = taskRepository
 						.getCredentials(AuthenticationType.REPOSITORY);
 				GitHubService service = new GitHubService();
 				monitor.subTask("Contacting server...");
@@ -151,17 +155,12 @@ public class GitHubRepositorySettingsPage extends
 									+ e.getMessage()));
 					return;
 				}
+				setStatus(new Status(IStatus.OK, GitHubUi.BUNDLE_ID, "Success!"));
+			} finally {
+				monitor.done();
 			}
-		};
-		return validator;
-	}
-
-	@Override
-	protected boolean isValidUrl(final String url) {
-		if (url.contains("github")) {
-			return true;
 		}
-		return false;
+
 	}
 
 }
