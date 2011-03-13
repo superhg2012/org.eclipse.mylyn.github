@@ -14,6 +14,10 @@ import java.util.Collection;
  */
 public class CollectionUtils {
 
+	private CollectionUtils() {
+
+	}
+
 	/**
 	 * Filter a collection.
 	 * 

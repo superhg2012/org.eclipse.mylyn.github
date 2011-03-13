@@ -50,59 +50,59 @@ public class GitHubUser {
 
 	}
 
-	public void setLogin(String login) {
+	public final void setLogin(String login) {
 		this.login = login;
 	}
 
-	public String getLogin() {
+	public final String getLogin() {
 		return login;
 	}
 
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public void setCompany(String company) {
+	public final void setCompany(String company) {
 		this.company = company;
 	}
 
-	public String getCompany() {
+	public final String getCompany() {
 		return company;
 	}
 
-	public void setLocation(String location) {
+	public final void setLocation(String location) {
 		this.location = location;
 	}
 
-	public String getLocation() {
+	public final String getLocation() {
 		return location;
 	}
 
-	public void setBlog(String blog) {
+	public final void setBlog(String blog) {
 		this.blog = blog;
 	}
 
-	public String getBlog() {
+	public final String getBlog() {
 		return blog;
 	}
 
-	public void setEmail(String email) {
+	public final void setEmail(String email) {
 		this.email = email;
 	}
 
-	public String getEmail() {
+	public final String getEmail() {
 		return email;
 	}
 
-	public void setGravatarId(String gravatarId) {
+	public final void setGravatarId(String gravatarId) {
 		this.gravatarId = gravatarId;
 	}
 
-	public String getGravatarId() {
+	public final String getGravatarId() {
 		return gravatarId;
 	}
 

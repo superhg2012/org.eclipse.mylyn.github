@@ -20,18 +20,21 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
+import org.eclipse.mylyn.tasks.core.data.TaskDataModel;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractAttributeEditor;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPart;
 import org.eclipse.mylyn.tasks.ui.editors.AttributeEditorFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorPartDescriptor;
+import org.eclipse.ui.IEditorSite;
 
 /**
  * Editor page for GitHub.
  * 
- * @author Christian Trutz
+ * @author Christian Trutz, Gabriel Ciuloaica
  * @since 0.1.0
  */
 public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
@@ -69,37 +72,71 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 				descriptorIt.remove();
 			}
 		}
-		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_ATTRIBUTES) {
-			@Override
-			public AbstractTaskEditorPart createPart() {
-				return new GitHubAttributesTaskEditorPart();
-			}
-		}.setPath(PATH_ATTRIBUTES));
-		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_PEOPLE) {
-			@Override
-			public AbstractTaskEditorPart createPart() {
-				return new GitHubPeopleTaskEditorPart();
-			}
-		}.setPath(PATH_PEOPLE));
-		partDescriptors.add(new TaskEditorPartDescriptor(ID_PART_COMMENTS) {
-			@Override
-			public AbstractTaskEditorPart createPart() {
-				return new GitHubCommentsTaskEditorPart();
-			}
-		}.setPath(PATH_COMMENTS));
+		partDescriptors.add(new GitHubAtrributesTaskEditorPartDescriptor()
+				.setPath(PATH_ATTRIBUTES));
+		partDescriptors.add(new GitHubPeopleTaskEditorPartDescriptor()
+				.setPath(PATH_PEOPLE));
+		partDescriptors.add(new GitHubCommentsTaskEditorPartDescriptor()
+				.setPath(PATH_COMMENTS));
 		return partDescriptors;
 	}
 
 	@Override
 	protected AttributeEditorFactory createAttributeEditorFactory() {
-		return new AttributeEditorFactory(getModel(), getTaskRepository(),
-				getEditorSite()) {
-			@Override
-			public AbstractAttributeEditor createEditor(String type,
-					TaskAttribute taskAttribute) {
+		return new GitHubAttributeEditorFactory(getModel(),
+				getTaskRepository(), getEditorSite());
+	}
 
-				return super.createEditor(type, taskAttribute);
-			}
-		};
+	private static final class GitHubAttributeEditorFactory extends
+			AttributeEditorFactory {
+
+		public GitHubAttributeEditorFactory(TaskDataModel model,
+				TaskRepository taskRepository, IEditorSite editorSite) {
+			super(model, taskRepository, editorSite);
+		}
+
+		@Override
+		public AbstractAttributeEditor createEditor(String type,
+				TaskAttribute taskAttribute) {
+			return super.createEditor(type, taskAttribute);
+		}
+
+	}
+
+	private static final class GitHubCommentsTaskEditorPartDescriptor extends
+			TaskEditorPartDescriptor {
+		private GitHubCommentsTaskEditorPartDescriptor() {
+			super(ID_PART_COMMENTS);
+		}
+
+		@Override
+		public AbstractTaskEditorPart createPart() {
+			return new GitHubCommentsTaskEditorPart();
+		}
+	}
+
+	private final static class GitHubAtrributesTaskEditorPartDescriptor extends
+			TaskEditorPartDescriptor {
+		public GitHubAtrributesTaskEditorPartDescriptor() {
+			super(ID_PART_ATTRIBUTES);
+		}
+
+		@Override
+		public AbstractTaskEditorPart createPart() {
+			return new GitHubAttributesTaskEditorPart();
+		}
+	}
+
+	private final static class GitHubPeopleTaskEditorPartDescriptor extends
+			TaskEditorPartDescriptor {
+
+		public GitHubPeopleTaskEditorPartDescriptor() {
+			super(ID_PART_PEOPLE);
+		}
+
+		@Override
+		public AbstractTaskEditorPart createPart() {
+			return new GitHubPeopleTaskEditorPart();
+		}
 	}
 }

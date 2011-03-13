@@ -23,7 +23,8 @@ import org.eclipse.mylyn.github.internal.collections.CollectionUtils;
 import org.eclipse.mylyn.github.internal.collections.Predicate;
 
 /**
- * Container of multiple GitHub Issues, used when returning JSON objects
+ * Container of multiple GitHub Issues, used when returning JSON objects,
+ * capable of filtering the collection based on labels.
  */
 public class GitHubIssues {
 
@@ -51,14 +52,24 @@ public class GitHubIssues {
 			filteredIssues = getIssues();
 		} else {
 			filteredIssues = CollectionUtils.filter(getIssues(),
-					new Predicate<GitHubIssue>() {
-						@Override
-						public boolean apply(GitHubIssue issue) {
-							return issue.getLabels().contains(filter);
-						}
-					});
+					new IssuePredicate(filter));
+
 		}
 		return filteredIssues;
+	}
+
+	private static class IssuePredicate implements Predicate<GitHubIssue> {
+
+		private final String filter;
+
+		public IssuePredicate(String filter) {
+			this.filter = filter;
+		}
+
+		public boolean apply(GitHubIssue issue) {
+			return issue.getLabels().contains(filter);
+		}
+
 	}
 
 }

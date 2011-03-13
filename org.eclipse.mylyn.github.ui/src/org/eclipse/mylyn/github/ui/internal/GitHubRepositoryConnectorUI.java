@@ -128,21 +128,8 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 					project = buildTaskRepositoryProject(url);
 				}
 
-				TaskRepository taskRepository = null;
-				if (user == null && project == null) {
-					taskRepository = repository;
-				} else if (user != null && project != null) {
-					String repositoryUrl = buildGitHubUrl(user, project);
-					taskRepository = TasksUi
-							.getRepositoryManager()
-							.getRepository(GitHub.CONNECTOR_KIND, repositoryUrl);
-					if (taskRepository == null) {
-						repositoryUrl = buildGitHubUrlAlternate(user, project);
-						taskRepository = TasksUi.getRepositoryManager()
-								.getRepository(GitHub.CONNECTOR_KIND,
-										repositoryUrl);
-					}
-				}
+				TaskRepository taskRepository = getTaskRepository(repository,
+						user, project);
 				if (taskRepository != null) {
 					Region region = createRegion(textOffset, matcher);
 					hyperlinks
@@ -156,6 +143,26 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 			}
 		}
 		return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
+	}
+
+	private TaskRepository getTaskRepository(TaskRepository repository,
+			String user, String project) {
+		TaskRepository taskRepository = null;
+		if (user == null && project == null) {
+			taskRepository = repository;
+		} else if (user != null && project != null) {
+			String repositoryUrl = buildGitHubUrl(user, project);
+			taskRepository = TasksUi
+					.getRepositoryManager()
+					.getRepository(GitHub.CONNECTOR_KIND, repositoryUrl);
+			if (taskRepository == null) {
+				repositoryUrl = buildGitHubUrlAlternate(user, project);
+				taskRepository = TasksUi.getRepositoryManager()
+						.getRepository(GitHub.CONNECTOR_KIND,
+								repositoryUrl);
+			}
+		}
+		return taskRepository;
 	}
 
 	private Region createRegion(int textOffset, Matcher matcher) {

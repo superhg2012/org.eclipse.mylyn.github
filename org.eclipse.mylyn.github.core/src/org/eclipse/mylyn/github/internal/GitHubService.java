@@ -507,7 +507,7 @@ public class GitHubService {
 	 * @throws GitHubServiceException
 	 * @note API Doc:/issues/labels/:user/:repo
 	 */
-	public String[] retrieveLabels(final TaskRepository repository)
+	public final String[] retrieveLabels(final TaskRepository repository)
 			throws GitHubServiceException {
 		PostMethod method = null;
 		AuthenticationCredentials auth = repository
@@ -544,16 +544,16 @@ public class GitHubService {
 	 * @throws GitHubServiceException
 	 * @note API doc: /user/show/:username [GET]
 	 */
-	public GitHubUser retriveUser(String username)
+	public final GitHubUser retriveUser(String username)
 			throws GitHubServiceException {
 		GetMethod method = null;
 		method = new GetMethod(API_URL_BASE + API_USER_ROOT + "show/"
 				+ username);
-		GitHubUser user = null;
+		GitHubShowUser user = null;
 		try {
 			executeMethod(method);
 			String response = new String(method.getResponseBody());
-			user = gson.fromJson(response, GitHubUser.class);
+			user = gson.fromJson(response, GitHubShowUser.class);
 		} catch (IOException e) {
 			throw new GitHubServiceException(
 					FAILED_TO_READ_RESPONSE_BODY_EXCEPTION_MESSAGE, e);
@@ -563,6 +563,6 @@ public class GitHubService {
 			}
 		}
 
-		return user;
+		return user.getUser();
 	}
 }

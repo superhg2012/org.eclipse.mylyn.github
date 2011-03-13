@@ -12,6 +12,7 @@ import java.io.StringWriter;
 
 import org.eclipse.mylyn.github.internal.GitHubIssue;
 import org.eclipse.mylyn.github.internal.GitHubIssues;
+import org.eclipse.mylyn.github.internal.GitHubUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,8 @@ public class MarshalingTest {
 
 		assertEquals(NUMBER_OF_EXPECTED_ISSUES, issues.getIssues().size());
 
-		GitHubIssue issue = (issues.getIssues().toArray(new GitHubIssue[0]))[INDEX_OF_LAST_ISSUE_FROM_LIST];
+		GitHubIssue issue = (issues.getIssues().toArray(new GitHubIssue[issues
+				.getIssues().size()]))[INDEX_OF_LAST_ISSUE_FROM_LIST];
 		// {"number":10,"votes":0,"created_at":"2010/02/04 21:03:54 -0800","body":"test description 2 ","title":"test issue for testing mylyn github connector2",
 		// "updated_at":"2010/02/04 21:09:37 -0800","closed_at":null,"user":"dgreen99","labels":[],"state":"open"}]}
 		assertEquals("10", issue.getNumber());
@@ -81,6 +83,14 @@ public class MarshalingTest {
 				stream.close();
 			}
 		}
+
+	}
+
+	@Test
+	public final void unmarshalUser() {
+		String userProfile = "{\"gravatar_id\":\"f6a3101a4235ca1c85348aad0180bf81\",\"company\":null,\"name\":\"Gabriel Ciuloaica\",\"created_at\":\"2009/05/28 04:39:06 -0700\",\"location\":\"Romania\",\"public_repo_count\":1,\"public_gist_count\":0,\"blog\":\"http://devsprint.github.com\",\"following_count\":3,\"id\":89512,\"type\":\"User\",\"permission\":null,\"followers_count\":1,\"login\":\"devsprint\",\"email\":\"gciuloaica@gmail.com\"}";
+		GitHubUser user = gson.fromJson(userProfile, GitHubUser.class);
+		assertEquals("devsprint", user.getLogin());
 
 	}
 }

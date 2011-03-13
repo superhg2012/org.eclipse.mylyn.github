@@ -57,7 +57,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	private Combo status = null;
 	private Combo label = null;
 
-	private Button updateButton;
 	private boolean firstTime = true;
 
 	private final TaskRepository taskRepository;
@@ -145,7 +144,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	private void createUpdateButton(Composite parent) {
 
-		updateButton = new Button(parent, SWT.PUSH);
+		Button updateButton = new Button(parent, SWT.PUSH);
 		updateButton.setText("Update");
 		GridData buttonGridData = new GridData(SWT.FILL, SWT.CENTER, true,
 				false);

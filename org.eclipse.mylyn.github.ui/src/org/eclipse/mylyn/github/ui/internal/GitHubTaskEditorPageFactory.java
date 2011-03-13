@@ -40,8 +40,7 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public boolean canCreatePageFor(TaskEditorInput input) {
-		if (GitHub.CONNECTOR_KIND.equals(
-				input.getTask().getConnectorKind())) {
+		if (GitHub.CONNECTOR_KIND.equals(input.getTask().getConnectorKind())) {
 			return true;
 		}
 		if (TasksUiUtil.isOutgoingNewTask(input.getTask(),
@@ -53,17 +52,19 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public Image getPageImage() {
-		if (gitLogoImage != null)
+		if (gitLogoImage != null) {
 			return gitLogoImage;
+		}
 		ImageDescriptor imageDescriptor = AbstractUIPlugin
 				.imageDescriptorFromPlugin("org.eclipse.mylyn.github.ui",
 						"images/git-logo.png");
 		if (imageDescriptor == null) {
 			return null;
 		}
+		gitLogoImage = new Image(Display.getCurrent(),
+				imageDescriptor.getImageData());
 
-		return gitLogoImage = new Image(Display.getCurrent(), imageDescriptor
-				.getImageData());
+		return gitLogoImage;
 	}
 
 	@Override
@@ -75,12 +76,12 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	public int getPriority() {
 		return PRIORITY_TASK;
 	}
-	
+
 	@Override
 	public IFormPage createPage(TaskEditor parentEditor) {
 		return new GitHubTaskEditorPage(parentEditor);
 	}
-	
+
 	@Override
 	public String[] getConflictingIds(TaskEditorInput input) {
 		return new String[] { ITasksUiConstants.ID_PAGE_PLANNING };
