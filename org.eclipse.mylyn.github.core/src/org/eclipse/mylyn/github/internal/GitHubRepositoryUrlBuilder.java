@@ -23,14 +23,6 @@ public final class GitHubRepositoryUrlBuilder {
 
 	}
 
-	public static String buildTaskRepositoryUser(String repositoryUrl) {
-		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
-		if (matcher.matches()) {
-			return matcher.group(1);
-		}
-		return null;
-	}
-
 	public static String buildTaskRepositoryProject(String repositoryUrl) {
 		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
 		if (matcher.matches()) {

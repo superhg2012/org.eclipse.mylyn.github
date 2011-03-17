@@ -60,13 +60,6 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		while (descriptorIt.hasNext()) {
 			TaskEditorPartDescriptor partDescriptor = descriptorIt.next();
 			if (partDescriptor.getId().equals(ID_PART_ATTRIBUTES)) {
-
-				descriptorIt.remove();
-			} else if (partDescriptor.getId().equals(ID_PART_COMMENTS)) {
-				// currently the API doesn't support reading existing comments,
-				// though it does allow for creating them. Silly really.
-				// see
-				// http://support.github.com/discussions/feature-requests/696-issues-api-improvement
 				descriptorIt.remove();
 			} else if (partDescriptor.getId().equals(ID_PART_PEOPLE)) {
 				descriptorIt.remove();
@@ -76,8 +69,6 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 				.setPath(PATH_ATTRIBUTES));
 		partDescriptors.add(new GitHubPeopleTaskEditorPartDescriptor()
 				.setPath(PATH_PEOPLE));
-		partDescriptors.add(new GitHubCommentsTaskEditorPartDescriptor()
-				.setPath(PATH_COMMENTS));
 		return partDescriptors;
 	}
 
@@ -87,7 +78,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 				getTaskRepository(), getEditorSite());
 	}
 
-	private static final class GitHubAttributeEditorFactory extends
+	private final class GitHubAttributeEditorFactory extends
 			AttributeEditorFactory {
 
 		public GitHubAttributeEditorFactory(TaskDataModel model,
@@ -103,19 +94,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 
 	}
 
-	private static final class GitHubCommentsTaskEditorPartDescriptor extends
-			TaskEditorPartDescriptor {
-		private GitHubCommentsTaskEditorPartDescriptor() {
-			super(ID_PART_COMMENTS);
-		}
-
-		@Override
-		public AbstractTaskEditorPart createPart() {
-			return new GitHubCommentsTaskEditorPart();
-		}
-	}
-
-	private static final class GitHubAtrributesTaskEditorPartDescriptor extends
+	private final class GitHubAtrributesTaskEditorPartDescriptor extends
 			TaskEditorPartDescriptor {
 		public GitHubAtrributesTaskEditorPartDescriptor() {
 			super(ID_PART_ATTRIBUTES);
@@ -127,7 +106,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 		}
 	}
 
-	private static final class GitHubPeopleTaskEditorPartDescriptor extends
+	private final class GitHubPeopleTaskEditorPartDescriptor extends
 			TaskEditorPartDescriptor {
 
 		public GitHubPeopleTaskEditorPartDescriptor() {

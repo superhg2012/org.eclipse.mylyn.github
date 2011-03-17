@@ -16,14 +16,14 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.mylyn.github.internal.GitHub;
-import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
+import org.eclipse.mylyn.github.internal.GitHubService;
 import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
-import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -212,13 +212,11 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	}
 
 	private void updateAttributesFromRepository() {
-		GitHubRepositoryConnector connector = (GitHubRepositoryConnector) TasksUi
-				.getRepositoryManager().getRepositoryConnector(
-						GitHub.CONNECTOR_KIND);
-		String labelsValues[] = null;
+		
+		List<String> labelsValues = null;
 		try {
-			labelsValues = connector.getService()
-					.retrieveLabels(taskRepository);
+			labelsValues = GitHubService.getLabelsService(taskRepository)
+					.retrieve();
 		} catch (GitHubServiceException e) {
 			MessageDialog.openInformation(
 					Display.getCurrent().getActiveShell(),
@@ -226,16 +224,17 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		}
 		label.removeAll();
 		if (labelsValues != null) {
-
-			label.setItems(labelsValues);
+			for (String labelValue : labelsValues) {
+				label.add(labelValue);
+			}
 		}
 		label.add("all", 0);
 		label.select(0);
 		String queryModelLabelStatus = getQuery() == null ? null : getQuery()
 				.getAttribute(ATTR_QUERY_LABEL);
 		if (queryModelLabelStatus != null) {
-			for (int x = 0; x < labelsValues.length; ++x) {
-				if (labelsValues[x].equals(queryModelLabelStatus)) {
+			for (int x = 0; x < labelsValues.size(); ++x) {
+				if (labelsValues.get(x).equals(queryModelLabelStatus)) {
 					label.select(x + 1);
 					break;
 				}

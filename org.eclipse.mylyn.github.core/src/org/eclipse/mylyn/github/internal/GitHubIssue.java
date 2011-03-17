@@ -52,6 +52,9 @@ public class GitHubIssue {
 
 	private List<String> labels;
 
+	@SerializedName("gravatar_id")
+	private String gravatarId;
+
 	/**
 	 * Create a new GitHub Issue Object
 	 * 
@@ -65,8 +68,8 @@ public class GitHubIssue {
 	 *            - The text body of the issue;
 	 */
 	public GitHubIssue(final String number, final String user,
-			final String title, final String body, final Integer comments, Integer votes,
-			final List<String> labels) {
+			final String title, final String body, final Integer comments,
+			Integer votes, final List<String> labels, String gravatarId) {
 		this.number = number;
 		this.user = user;
 		this.title = title;
@@ -74,6 +77,7 @@ public class GitHubIssue {
 		this.comments = comments;
 		this.votes = votes;
 		this.labels = labels;
+		this.gravatarId = gravatarId;
 	}
 
 	/**
@@ -87,6 +91,7 @@ public class GitHubIssue {
 		this.comments = 0;
 		this.votes = 0;
 		this.labels = new ArrayList<String>();
+		this.gravatarId = "";
 	}
 
 	/**
@@ -216,6 +221,14 @@ public class GitHubIssue {
 
 	public final Integer getVotes() {
 		return votes;
+	}
+
+	public void setGravatarId(String gravatarId) {
+		this.gravatarId = gravatarId;
+	}
+
+	public String getGravatarId() {
+		return gravatarId;
 	}
 
 }

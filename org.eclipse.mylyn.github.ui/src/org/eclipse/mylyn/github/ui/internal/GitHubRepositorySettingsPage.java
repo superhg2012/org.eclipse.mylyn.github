@@ -75,9 +75,6 @@ public class GitHubRepositorySettingsPage extends
 						.getText().trim().length() == 0)) {
 			String fullUrlText = URL + "/user/project";
 			serverUrlCombo.setText(fullUrlText);
-			// select the user/project part of the URL so that the user can just
-			// start
-			// typing to replace the text.
 			serverUrlCombo.setSelection(new Point(URL.length() + 1, fullUrlText
 					.length()));
 		}
@@ -131,15 +128,12 @@ public class GitHubRepositorySettingsPage extends
 					return;
 				}
 				monitor.worked(MONITOR_PROGRESS_100);
-				String user = urlMatcher.group(1);
-				String repo = urlMatcher.group(2);
 				AuthenticationCredentials auth = taskRepository
 						.getCredentials(AuthenticationType.REPOSITORY);
-				GitHubService service = new GitHubService();
 				monitor.subTask("Contacting server...");
 				try {
 					// verify the repo
-					service.searchIssues(user, repo, "open", "", auth);
+					GitHubService.getIssueService(taskRepository).retrieve();
 					monitor.worked(MONITOR_PROGRESS_400);
 					// verify the credentials
 					if (auth == null) {
@@ -147,7 +141,7 @@ public class GitHubRepositorySettingsPage extends
 								.createErrorStatus("Credentials are required.  Please specify username and API Token."));
 						return;
 					}
-					if (!service.verifyCredentials(auth)) {
+					if (!GitHubService.getUserService(taskRepository).validateCredentials()) {
 						setStatus(GitHubUi
 								.createErrorStatus("Invalid credentials.  Please check your GitHub User ID and API Token.\nYou can find your API Token on your GitHub account settings page."));
 						return;

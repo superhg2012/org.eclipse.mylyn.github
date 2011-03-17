@@ -1,21 +1,19 @@
 package org.eclipse.mylyn.github.internal;
 
 import static org.eclipse.mylyn.github.internal.GitHubConnectorLogger.createErrorStatus;
-import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
-import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryUser;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
-import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
@@ -24,6 +22,7 @@ import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
+import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 
@@ -35,22 +34,10 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	private static final String DATA_VERSION = "1";
 
-	private GitHubTaskAttributeMapper taskAttributeMapper = null;
-	private final GitHubRepositoryConnector connector;
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
 
 	private final DateFormat githubDateFormat = new SimpleDateFormat(
 			"yyyy/MM/dd HH:mm:ss Z");
-
-	/**
-	 * Create a new data handler instance.
-	 * 
-	 * @param connector
-	 *            - repository connector instance
-	 */
-	public GitHubTaskDataHandler(GitHubRepositoryConnector connector) {
-		this.connector = connector;
-	}
 
 	/**
 	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#getAttributeMapper(org.eclipse.mylyn.tasks.core.TaskRepository)
@@ -58,11 +45,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	@Override
 	public final TaskAttributeMapper getAttributeMapper(
 			TaskRepository taskRepository) {
-		if (this.taskAttributeMapper == null) {
-			this.taskAttributeMapper = new GitHubTaskAttributeMapper(
-					taskRepository);
-		}
-		return this.taskAttributeMapper;
+		TaskAttributeMapper taskAttributeMapper = new GitHubTaskAttributeMapper(
+				taskRepository);
+		return taskAttributeMapper;
 	}
 
 	/**
@@ -100,16 +85,11 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			IProgressMonitor monitor) throws CoreException {
 
 		GitHubIssue issue = createIssue(taskData);
-		String user = buildTaskRepositoryUser(repository.getUrl());
-		String repo = buildTaskRepositoryProject(repository.getUrl());
+		GitHubIssueService issueService = GitHubService
+				.getIssueService(repository);
 		try {
-
-			GitHubService service = connector.getService();
-			AuthenticationCredentials credentials = repository
-					.getCredentials(AuthenticationType.REPOSITORY);
 			if (taskData.isNew()) {
-				issue = service
-						.openIssueForView(user, repo, issue, credentials);
+				issue = issueService.create(issue);
 			} else {
 				TaskAttribute operationAttribute = taskData.getRoot()
 						.getAttribute(TaskAttribute.OPERATION);
@@ -122,22 +102,24 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 				}
 				if (operation != null && operation != GitHubTaskOperation.LEAVE) {
-					service.openIssueForEdit(user, repo, issue, credentials);
+					issueService.update(issue);
 					switch (operation) {
 					case REOPEN:
-						service.reopenIssue(user, repo, issue, credentials);
+						issueService.reopenIssue(issue);
 						break;
 					case CLOSE:
-						service.closeIssue(user, repo, issue, credentials);
+						issueService.closeIssue(issue);
 						break;
 					default:
 						throw new IllegalStateException("not implemented: "
 								+ operation);
 					}
 				} else {
-					service.openIssueForEdit(user, repo, issue, credentials);
+					issueService.update(issue);
 				}
 			}
+			updateTaskLabels(repository, issue, oldAttributes);
+			updateComments(repository, taskData, issue);
 			return new RepositoryResponse(
 					taskData.isNew() ? ResponseKind.TASK_CREATED
 							: ResponseKind.TASK_UPDATED, issue.getNumber());
@@ -145,6 +127,64 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			throw new CoreException(createErrorStatus(e));
 		}
 
+	}
+
+	private void updateComments(TaskRepository repository, TaskData taskData, GitHubIssue issue) throws GitHubServiceException {
+		TaskAttribute newCommentAttribute = taskData.getRoot()
+				.getMappedAttribute(TaskAttribute.COMMENT_NEW);
+		if (newCommentAttribute != null) {
+			String newComment = newCommentAttribute.getValue();
+			GitHubComment comment = new GitHubComment();
+			comment.setBody(newComment);
+			comment.setGravatarId(issue.getGravatarId());
+			comment.setUser(issue.getUser());
+			comment.setCreatedAt(issue.getCreatedAt());
+			comment.setUpdatedAt(issue.getUpdatedAt());
+			comment.setId(issue.getNumber());
+			GitHubService.getCommentsService(repository).create(comment);
+			
+		}
+
+	}
+
+	private void updateTaskLabels(TaskRepository repository, GitHubIssue issue,
+			Set<TaskAttribute> oldAttributes) throws GitHubServiceException {
+		GitHubLabelsService labelsService = GitHubService
+				.getLabelsService(repository);
+		List<String> oldLabels = getOldLabelsValue(oldAttributes);
+		List<String> currentLabels = issue.getLabels();
+		oldLabels.removeAll(currentLabels);
+		for (String label : oldLabels) {
+			labelsService.deleteLabelFromIssue(label, issue.getNumber());
+		}
+
+		for (String label : issue.getLabels()) {
+			labelsService.addLabelToIssue(label, issue.getNumber());
+		}
+
+	}
+
+	private List<String> getOldLabelsValue(Set<TaskAttribute> oldAttributes) {
+		Iterator<TaskAttribute> it = oldAttributes.iterator();
+		List<String> labels = new ArrayList<String>();
+		while (it.hasNext()) {
+			TaskAttribute attribute = it.next();
+
+			if (attribute != null) {
+				if (attribute.getId().equalsIgnoreCase(
+						GitHubTaskAttributes.LABEL.getId())) {
+					String attributeValue = attribute.getValue();
+					StringTokenizer st = new StringTokenizer(attributeValue,
+							",", false);
+					while (st.hasMoreTokens()) {
+						labels.add(st.nextToken().trim());
+					}
+					break;
+				}
+
+			}
+		}
+		return labels;
 	}
 
 	/**
@@ -163,8 +203,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	 * @return a new task data.
 	 */
 	public final TaskData createTaskData(TaskRepository repository,
-			IProgressMonitor monitor, String user, String project,
-			GitHubIssue issue, boolean isPartialData) {
+			IProgressMonitor monitor, GitHubIssue issue, boolean isPartialData) {
 
 		TaskData data = new TaskData(getAttributeMapper(repository),
 				GitHub.CONNECTOR_KIND, repository.getRepositoryUrl(),
@@ -187,12 +226,62 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 				issue.getLabels());
 		createVotesAttribute(data, GitHubTaskAttributes.VOTES, issue.getVotes());
 		createAttribute(data, GitHubTaskAttributes.REPORTED_BY, issue.getUser());
-
+		createAttribute(data, GitHubTaskAttributes.REPORTER_GRAVATAR_ID,
+				issue.getGravatarId());
+		updateTaskDataWithComments(repository, data, issue);
+		createAttribute(data, GitHubTaskAttributes.NEW_COMMENTS,null);
 		if (isPartial(data)) {
 			data.setPartial(isPartialData);
 		}
 
 		return data;
+	}
+
+	private void updateTaskDataWithComments(TaskRepository repository,
+			TaskData data, GitHubIssue issue) {
+		// Initialize a counter, since you want to number each task, since the
+		// editor part likes to display
+		// them with numbers.
+		int count = 0;
+		GitHubComments comments = null;
+		try {
+			comments = GitHubService.getCommentsService(repository).retrieve(
+					issue.getNumber());
+		} catch (GitHubServiceException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// Loop through the comments in your native database.
+		for (GitHubComment comment : comments.getComments()) {
+			TaskCommentMapper mapper = new TaskCommentMapper(); // Create a new
+																// one each
+																// time, to be
+																// safe.
+			// Set properties and text associated with this comment.
+
+			mapper.setAuthor(repository.createPerson(comment.getUser()));
+			try {
+				mapper.setCreationDate(githubDateFormat.parse(comment
+						.getCreatedAt()));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			mapper.setText(comment.getBody());
+			mapper.setNumber(count);
+
+			// Create, in the task data object, a new attribute that will hold
+			// this comment.
+			TaskAttribute attribute = data.getRoot().createAttribute(
+					TaskAttribute.PREFIX_COMMENT + count);
+
+			// Ask the mapper to copy the properties and text into the new
+			// attribute.
+			mapper.applyTo(attribute);
+
+			count++;
+		}
+
 	}
 
 	private void createVotesAttribute(TaskData data,
@@ -318,10 +407,13 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	private List<String> toGitHubLabel(TaskData taskData,
 			GitHubTaskAttributes attr) {
-		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.name());
+		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.getId());
 		String value = attribute == null ? null : attribute.getValue();
 		List<String> labels = new ArrayList<String>();
-		labels.add(value);
+		StringTokenizer st = new StringTokenizer(value, ",", false);
+		while (st.hasMoreTokens()) {
+			labels.add(st.nextToken().trim());
+		}
 		return labels;
 	}
 

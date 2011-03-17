@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -21,13 +22,13 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 
 	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
-	private final TaskRepository taskRepository;
 	private static final Log LOG = LogFactory
 			.getLog(GitHubTaskAttributeMapper.class);
 
+	private List<String> labels;
+
 	public GitHubTaskAttributeMapper(TaskRepository taskRepository) {
 		super(taskRepository);
-		this.taskRepository = taskRepository;
 	}
 
 	@Override
@@ -50,20 +51,21 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 
 	@Override
 	public Map<String, String> getOptions(TaskAttribute attribute) {
+
 		TaskAttribute mappedLabelAttribute = attribute.getTaskData().getRoot()
 				.getMappedAttribute(GitHub.GITHUB_TASK_LABEL);
-		if (mappedLabelAttribute != null
-				&& mappedLabelAttribute.getValue().length() > 0) {
-			GitHubService service = new GitHubService();
-			String labels[] = null;
-			try {
-				labels = service.retrieveLabels(taskRepository);
-			} catch (GitHubServiceException e) {
-				LOG.error("Failed to retrieve labels from server."
-						+ e.getMessage());
-			}
+		if (mappedLabelAttribute != null) {
+			if (labels == null) {
+				try {
+					labels = GitHubService.getLabelsService(getTaskRepository())
+							.retrieve();
+				} catch (GitHubServiceException e) {
+					LOG.error("Failed to retrieve labels from server."
+							+ e.getMessage());
+				}
 
-			if (labels != null && labels.length > 0) {
+			}
+			if (labels != null && (!labels.isEmpty())) {
 				Map<String, String> newLabels = new LinkedHashMap<String, String>();
 				for (String label : labels) {
 					newLabels.put(label, label);

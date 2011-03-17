@@ -11,9 +11,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Comments part editor.
  * 
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
- * 
+ * @note note used yet - look to see if we need to overwrite the default
+ *       functionality.
  */
 public class GitHubCommentsTaskEditorPart extends AbstractTaskEditorPart {
+
+	public GitHubCommentsTaskEditorPart() {
+		setPartName("Comments");
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -46,19 +46,22 @@ public final class GitHub {
 	public static final String API_URL_BASE = "https://github.com/api/v2/json/";
 	public static final String API_ISSUES_ROOT = "issues/";
 	public static final String API_USER_ROOT = "user/";
-	
-	public static final String OPEN = "open/"; 
+
+	public static final String OPEN = "open/";
 	public static final String REOPEN = "reopen/";
 	public static final String CLOSE = "close/";
-	public static final String EDIT = "edit/"; 
-	public static final String SHOW = "show/"; 
+	public static final String EDIT = "edit/";
+	public static final String SHOW = "show/";
 	public static final String LIST = "list/";
-	public static final String SEARCH = "search/"; 
-	public static final String ADD_LABEL = "label/add/"; 
+	public static final String SEARCH = "search/";
+	public static final String ADD_LABEL = "label/add/";
 	public static final String REMOVE_LABEL = "label/remove/";
 	public static final String EMAILS = "emails";
-	public static final String GITHUB_TASK_LABEL="task.common.label";
-	public static final String GITHUB_TASK_VOTES="task.common.votes";
-	
+	public static final String GITHUB_TASK_LABEL = "task.common.label";
+	public static final String GITHUB_TASK_VOTES = "task.common.votes";
+	public static final String GITHUB_PEOPLE_GRAVATAR = "task.common.gravatarId";
+	public static final String GITHUB_PEOPLE_PROFILE = "task.common.profile";
+	public static final String GRAVATAR_API_URL = "http://www.gravatar.com/avatar/";
+	public static final String COMMENTS = "comments/";
 
 }
