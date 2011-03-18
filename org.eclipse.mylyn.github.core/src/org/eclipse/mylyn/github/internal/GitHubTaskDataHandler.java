@@ -129,7 +129,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 	}
 
-	private void updateComments(TaskRepository repository, TaskData taskData, GitHubIssue issue) throws GitHubServiceException {
+	private void updateComments(TaskRepository repository, TaskData taskData,
+			GitHubIssue issue) throws GitHubServiceException {
 		TaskAttribute newCommentAttribute = taskData.getRoot()
 				.getMappedAttribute(TaskAttribute.COMMENT_NEW);
 		if (newCommentAttribute != null) {
@@ -142,7 +143,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			comment.setUpdatedAt(issue.getUpdatedAt());
 			comment.setId(issue.getNumber());
 			GitHubService.getCommentsService(repository).create(comment);
-			
+
 		}
 
 	}
@@ -201,9 +202,11 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	 * @param issue
 	 *            - issue instance
 	 * @return a new task data.
+	 * @throws GitHubServiceException
 	 */
 	public final TaskData createTaskData(TaskRepository repository,
-			IProgressMonitor monitor, GitHubIssue issue, boolean isPartialData) {
+			IProgressMonitor monitor, GitHubIssue issue, boolean isPartialData)
+			throws GitHubServiceException {
 
 		TaskData data = new TaskData(getAttributeMapper(repository),
 				GitHub.CONNECTOR_KIND, repository.getRepositoryUrl(),
@@ -229,7 +232,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitHubTaskAttributes.REPORTER_GRAVATAR_ID,
 				issue.getGravatarId());
 		updateTaskDataWithComments(repository, data, issue);
-		createAttribute(data, GitHubTaskAttributes.NEW_COMMENTS,null);
+		createAttribute(data, GitHubTaskAttributes.NEW_COMMENTS, null);
 		if (isPartial(data)) {
 			data.setPartial(isPartialData);
 		}
@@ -238,19 +241,14 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	private void updateTaskDataWithComments(TaskRepository repository,
-			TaskData data, GitHubIssue issue) {
+			TaskData data, GitHubIssue issue) throws GitHubServiceException {
 		// Initialize a counter, since you want to number each task, since the
 		// editor part likes to display
 		// them with numbers.
 		int count = 0;
 		GitHubComments comments = null;
-		try {
-			comments = GitHubService.getCommentsService(repository).retrieve(
-					issue.getNumber());
-		} catch (GitHubServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		comments = GitHubService.getCommentsService(repository).retrieve(
+				issue.getNumber());
 		// Loop through the comments in your native database.
 		for (GitHubComment comment : comments.getComments()) {
 			TaskCommentMapper mapper = new TaskCommentMapper(); // Create a new
@@ -260,13 +258,14 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			// Set properties and text associated with this comment.
 
 			mapper.setAuthor(repository.createPerson(comment.getUser()));
+			String createdAt = comment.getCreatedAt();
+			Date createdAtDate = new Date();
 			try {
-				mapper.setCreationDate(githubDateFormat.parse(comment
-						.getCreatedAt()));
+				createdAtDate = githubDateFormat.parse(createdAt);
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// ignore for now.
 			}
+			mapper.setCreationDate(createdAtDate);
 			mapper.setText(comment.getBody());
 			mapper.setNumber(count);
 
@@ -408,7 +407,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	private List<String> toGitHubLabel(TaskData taskData,
 			GitHubTaskAttributes attr) {
 		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.getId());
-		String value = attribute == null ? null : attribute.getValue();
+		String value = attribute == null ? "" : attribute.getValue();
 		List<String> labels = new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(value, ",", false);
 		while (st.hasMoreTokens()) {

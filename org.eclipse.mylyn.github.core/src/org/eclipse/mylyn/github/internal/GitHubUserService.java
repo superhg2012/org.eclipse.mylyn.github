@@ -91,14 +91,14 @@ public class GitHubUserService extends AbstractGitHubService<GitHubUser> {
 			throws GitHubServiceException {
 		StringBuffer uri = new StringBuffer();
 		uri.append(GitHub.GRAVATAR_API_URL).append(gravatarId);
-		return executeRetrieveGrvatar(uri.toString());
+		return executeRetrieveGravatar(uri.toString());
 	}
 
-	private byte[] executeRetrieveGrvatar(String uri)
+	private byte[] executeRetrieveGravatar(String uri)
 			throws GitHubServiceException {
 		GetMethod method = new GetMethod(uri);
 		method.setQueryString("s=20");
-		byte image[] = { 0 };
+		byte image[] = null;
 		try {
 			executeMethod(method);
 			image = method.getResponseBody();

@@ -4,6 +4,7 @@
 package org.eclipse.mylyn.github.ui.internal;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.mylyn.github.internal.GitHub;
@@ -41,13 +42,12 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 		peopleComposite.setLayout(layout);
 		String gravatarId = getTaskData().getRoot()
 				.getMappedAttribute(GitHub.GITHUB_PEOPLE_GRAVATAR).getValue();
-		TaskAttribute user = getTaskData().getRoot()
-		.getMappedAttribute(TaskAttribute.USER_REPORTER);
+		TaskAttribute user = getTaskData().getRoot().getMappedAttribute(
+				TaskAttribute.USER_REPORTER);
 		user.getMetaData().setType(TaskAttribute.TYPE_URL);
 		user.setValue(getUserProfileUrl(user.getValue()));
-		addAttribute(peopleComposite, toolkit,user,
-				getGravatar(gravatarId));
-		
+		addAttribute(peopleComposite, toolkit, user, getGravatar(gravatarId));
+
 		toolkit.paintBordersFor(peopleComposite);
 		section.setClient(peopleComposite);
 		setSection(toolkit, section);
@@ -55,7 +55,7 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 	}
 
 	private String getUserProfileUrl(String username) {
-		return "http://github.com/"+username;
+		return "http://github.com/" + username;
 	}
 
 	private void addAttribute(Composite composite, FormToolkit toolkit,
@@ -63,8 +63,10 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 		AbstractAttributeEditor editor = createAttributeEditor(attribute);
 		if (editor != null) {
 			editor.createLabelControl(composite, toolkit);
-			Label gravatar = new Label(composite, SWT.BITMAP);
-			gravatar.setImage(gravatarImage);
+			if (gravatarImage != null) {
+				Label gravatar = new Label(composite, SWT.BITMAP);
+				gravatar.setImage(gravatarImage);
+			}
 			GridDataFactory.defaultsFor(editor.getLabelControl())
 					.indent(COLUMN_MARGIN, 0).applyTo(editor.getLabelControl());
 			editor.createControl(composite, toolkit);
@@ -74,7 +76,6 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 		}
 	}
 
-
 	private Image getGravatar(String gravatarId) {
 		byte gravatarRaw[] = null;
 		try {
@@ -83,8 +84,18 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 		} catch (GitHubServiceException e) {
 			// ignore for now
 		}
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(gravatarRaw);
-		Image image = new Image(null, inputStream);
+		Image image = null;
+		if (gravatarRaw != null) {
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(
+					gravatarRaw);
+			image = new Image(null, inputStream);
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				// ignore for now
+			}
+		}
+
 		return image;
 
 	}
