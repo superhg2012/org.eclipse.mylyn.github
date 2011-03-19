@@ -3,10 +3,8 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.eclipse.mylyn.internal.tasks.ui.editors.CheckboxMultiSelectAttributeEditor;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
@@ -31,15 +29,7 @@ public class GitHubLabelAttributeEditor extends
 
 	@Override
 	public final List<String> getValues() {
-		List<String> values = new ArrayList<String>();
-		String selectedLabels = getAttributeMapper().getValue(
-				getTaskAttribute());
-		StringTokenizer st = new StringTokenizer(selectedLabels, ",", false);
-		while (st.hasMoreTokens()) {
-			values.add(st.nextToken().trim());
-		}
-		return values;
-
+		return getAttributeMapper().getValues(getTaskAttribute());
 	}
 
 	@Override
