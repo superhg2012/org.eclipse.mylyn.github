@@ -25,7 +25,7 @@ public enum GitHubTaskAttributes {
 	STATUS("Status", TaskAttribute.STATUS, TaskAttribute.TYPE_SHORT_TEXT, true,
 			false, true),
 
-	LABEL("Label", GitHub.GITHUB_TASK_LABEL, TaskAttribute.TYPE_SHORT_TEXT,
+	LABEL("Label(s)", GitHub.GITHUB_TASK_LABEL, TaskAttribute.TYPE_SHORT_TEXT,
 			true, false, true),
 
 	VOTES("Votes", GitHub.GITHUB_TASK_VOTES, TaskAttribute.TYPE_SHORT_TEXT,

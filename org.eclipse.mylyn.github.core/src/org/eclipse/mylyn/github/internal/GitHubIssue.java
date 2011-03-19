@@ -223,11 +223,11 @@ public class GitHubIssue {
 		return votes;
 	}
 
-	public void setGravatarId(String gravatarId) {
+	public final void setGravatarId(String gravatarId) {
 		this.gravatarId = gravatarId;
 	}
 
-	public String getGravatarId() {
+	public final String getGravatarId() {
 		return gravatarId;
 	}
 

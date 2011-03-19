@@ -53,7 +53,7 @@ public class GitHubCommentsService extends AbstractGitHubService {
 	 * @note API issues/comments/:user/:repo/:number
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#retrieve(java.lang.String)
 	 */
-	public GitHubComments retrieve(String id) throws GitHubServiceException {
+	public final GitHubComments retrieve(String id) throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(COMMENTS)
 				.append(getTaskRepositoryUserName()).append("/")

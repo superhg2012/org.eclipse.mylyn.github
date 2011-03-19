@@ -37,51 +37,51 @@ public class GitHubComment {
 		this.updatedAt = "";
 	}
 
-	public void setGravatarId(String gravatarId) {
+	public final void setGravatarId(String gravatarId) {
 		this.gravatarId = gravatarId;
 	}
 
-	public String getGravatarId() {
+	public final String getGravatarId() {
 		return gravatarId;
 	}
 
-	public void setBody(String body) {
+	public final void setBody(String body) {
 		this.body = body;
 	}
 
-	public String getBody() {
+	public final String getBody() {
 		return body;
 	}
 
-	public void setUser(String user) {
+	public final void setUser(String user) {
 		this.user = user;
 	}
 
-	public String getUser() {
+	public final String getUser() {
 		return user;
 	}
 
-	public void setId(String id) {
+	public final void setId(String id) {
 		this.id = id;
 	}
 
-	public String getId() {
+	public final String getId() {
 		return id;
 	}
 
-	public void setCreatedAt(String createdAt) {
+	public final void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getCreatedAt() {
+	public final String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setUpdatedAt(String updatedAt) {
+	public final void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getUpdatedAt() {
+	public final String getUpdatedAt() {
 		return updatedAt;
 	}
 

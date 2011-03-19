@@ -28,6 +28,7 @@ import org.eclipse.ui.forms.widgets.Section;
  * 
  */
 public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
+	private static final int THREE_COLUMNS = 3;
 	private static final int COLUMN_MARGIN = 5;
 
 	public GitHubPeopleTaskEditorPart() {
@@ -38,7 +39,7 @@ public class GitHubPeopleTaskEditorPart extends AbstractTaskEditorPart {
 	public final void createControl(Composite parent, FormToolkit toolkit) {
 		Section section = createSection(parent, toolkit, true);
 		Composite peopleComposite = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout(3, false);
+		GridLayout layout = new GridLayout(THREE_COLUMNS, false);
 		peopleComposite.setLayout(layout);
 		String gravatarId = getTaskData().getRoot()
 				.getMappedAttribute(GitHub.GITHUB_PEOPLE_GRAVATAR).getValue();

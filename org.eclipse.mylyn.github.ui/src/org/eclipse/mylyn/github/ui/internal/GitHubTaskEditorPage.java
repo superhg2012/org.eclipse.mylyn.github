@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModel;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractAttributeEditor;
@@ -37,7 +38,7 @@ import org.eclipse.ui.IEditorSite;
  * @since 0.1.0
  */
 public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
-
+	
 	/**
 	 * Constructor for the GitHubTaskEditorPage
 	 * 
@@ -73,15 +74,16 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 
 	@Override
 	protected final AttributeEditorFactory createAttributeEditorFactory() {
-		return new GitHubAttributeEditorFactory(getModel(), getEditorSite());
+		return new GitHubAttributeEditorFactory(getModel(),
+				getTaskRepository(), getEditorSite());
 	}
 
-	private final class GitHubAttributeEditorFactory extends
+	private static final class GitHubAttributeEditorFactory extends
 			AttributeEditorFactory {
 
 		public GitHubAttributeEditorFactory(TaskDataModel model,
-				IEditorSite editorSite) {
-			super(model, getTaskRepository(), editorSite);
+				TaskRepository taskRepository, IEditorSite editorSite) {
+			super(model, taskRepository, editorSite);
 		}
 
 		@Override
