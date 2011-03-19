@@ -32,7 +32,7 @@ public class MarshalingTest {
 	private static final int INDEX_OF_LAST_ISSUE_FROM_LIST = 9;
 	private static final int NUMBER_OF_EXPECTED_ISSUES = 10;
 	private static final int NUMBER_OF_COMMENTS = 5;
-	private static final Gson gson = new Gson();
+	private static final Gson GSON = new Gson();
 
 	/**
 	 * Un-marshal issue test.
@@ -43,7 +43,7 @@ public class MarshalingTest {
 	 */
 	@Test
 	public final void unmarshalIssues() throws IOException {
-		GitHubIssues issues = gson.fromJson(
+		GitHubIssues issues = GSON.fromJson(
 				getResource("resources/issues.json"), GitHubIssues.class);
 		assertTrue(issues != null);
 		assertTrue(issues.getIssues() != null);
@@ -70,7 +70,7 @@ public class MarshalingTest {
 	@Test
 	public final void unmarshalUser() {
 		String userProfile = "{\"gravatar_id\":\"f6a3101a4235ca1c85348aad0180bf81\",\"company\":null,\"name\":\"Gabriel Ciuloaica\",\"created_at\":\"2009/05/28 04:39:06 -0700\",\"location\":\"Romania\",\"public_repo_count\":1,\"public_gist_count\":0,\"blog\":\"http://devsprint.github.com\",\"following_count\":3,\"id\":89512,\"type\":\"User\",\"permission\":null,\"followers_count\":1,\"login\":\"devsprint\",\"email\":\"gciuloaica@gmail.com\"}";
-		GitHubUser user = gson.fromJson(userProfile, GitHubUser.class);
+		GitHubUser user = GSON.fromJson(userProfile, GitHubUser.class);
 		assertEquals("devsprint", user.getLogin());
 
 	}

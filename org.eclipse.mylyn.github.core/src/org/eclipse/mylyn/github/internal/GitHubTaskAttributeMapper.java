@@ -28,7 +28,7 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 	private List<String> labels;
 
 	/**
-	 * Create a new task attribute mapper for a specified repository
+	 * Create a new task attribute map for a specified repository.
 	 * 
 	 * @param taskRepository
 	 */
