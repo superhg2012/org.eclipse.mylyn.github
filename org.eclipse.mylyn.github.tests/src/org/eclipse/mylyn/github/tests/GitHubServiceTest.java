@@ -43,7 +43,6 @@ public class GitHubServiceTest {
 
 	private static final String GITHUB_TEST_PROJECT_URL = "https://github.com/eclipse-github-plugin/org.eclipse.mylyn.github.issues";
 
-	// GitHub API key for user "eclipse-github-plugin"
 	private static final String API_KEY = "8b35af675fcdca9d254ae7a6ad4d0be8";
 
 	private static final String TEST_USER = "eclipse-github-plugin";
@@ -103,12 +102,13 @@ public class GitHubServiceTest {
 	 */
 	@Test
 	public final void openIssue() throws GitHubServiceException {
-		
+
 		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = GitHubService.getIssueService(getRepository()).create(issue);
+		GitHubIssue newIssue = GitHubService.getIssueService(getRepository())
+				.create(issue);
 		assertTrue(newIssue != null);
 		assertEquals(issue.getUser(), newIssue.getUser());
 		assertEquals(issue.getBody(), newIssue.getBody());
@@ -128,7 +128,8 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		GitHubIssue newIssue = GitHubService.getIssueService(getRepository()).create(issue);
+		GitHubIssue newIssue = GitHubService.getIssueService(getRepository())
+				.create(issue);
 		assertTrue(newIssue != null);
 
 		newIssue.setTitle(newIssue.getTitle() + " - modified");
@@ -136,7 +137,8 @@ public class GitHubServiceTest {
 
 		GitHubService.getIssueService(getRepository()).update(newIssue);
 
-		GitHubIssue showIssue = GitHubService.getIssueService(getRepository()).retrieve(newIssue.getNumber());
+		GitHubIssue showIssue = GitHubService.getIssueService(getRepository())
+				.retrieve(newIssue.getNumber());
 
 		assertTrue(showIssue != null);
 		assertEquals(newIssue.getTitle(), showIssue.getTitle());
@@ -150,7 +152,8 @@ public class GitHubServiceTest {
 	 */
 	@Test
 	public final void addLabel() throws GitHubServiceException {
-		String result = GitHubService.getLabelsService(getRepository()).create("lame");
+		String result = GitHubService.getLabelsService(getRepository()).create(
+				"lame");
 		assertTrue(result.equalsIgnoreCase("lame"));
 	}
 
@@ -165,9 +168,14 @@ public class GitHubServiceTest {
 		GitHubService.getLabelsService(getRepository()).delete("lame");
 	}
 
+	/**
+	 * Test the GitHubService implementation is able to retrieve user profile.
+	 * @throws GitHubServiceException
+	 */
 	@Test
 	public final void retrieveUserProfile() throws GitHubServiceException {
-		GitHubUser user = GitHubService.getUserService(getRepository()).retrieve(TEST_USER);
+		GitHubUser user = GitHubService.getUserService(getRepository())
+				.retrieve(TEST_USER);
 		assertEquals(TEST_USER, user.getLogin());
 	}
 }

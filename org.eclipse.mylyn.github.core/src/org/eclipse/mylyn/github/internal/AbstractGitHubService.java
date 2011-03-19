@@ -64,12 +64,8 @@ public abstract class AbstractGitHubService {
 		return method;
 	}
 
-	private void setHeaders(PostMethod method) {
-		method.addRequestHeader("Content-type",
-				"application/x-www-form-urlencoded; charset=UTF-8");
-	}
-
-	protected void executeMethod(HttpMethod method) throws GitHubServiceException {
+	protected final void executeMethod(HttpMethod method)
+			throws GitHubServiceException {
 		int status;
 		try {
 			status = httpClient.executeMethod(method);
@@ -105,6 +101,11 @@ public abstract class AbstractGitHubService {
 
 	protected final String getTaskRepositoryProjectName() {
 		return buildTaskRepositoryProject(getTaskRepository().getUrl());
+	}
+
+	private void setHeaders(PostMethod method) {
+		method.addRequestHeader("Content-type",
+				"application/x-www-form-urlencoded; charset=UTF-8");
 	}
 
 }

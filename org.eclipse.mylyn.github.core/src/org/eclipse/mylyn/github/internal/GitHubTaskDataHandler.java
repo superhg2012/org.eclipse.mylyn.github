@@ -171,17 +171,17 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		while (it.hasNext()) {
 			TaskAttribute attribute = it.next();
 
-			if (attribute != null) {
-				if (attribute.getId().equalsIgnoreCase(
-						GitHubTaskAttributes.LABEL.getId())) {
-					String attributeValue = attribute.getValue();
-					StringTokenizer st = new StringTokenizer(attributeValue,
-							",", false);
-					while (st.hasMoreTokens()) {
-						labels.add(st.nextToken().trim());
-					}
-					break;
+			if (attribute != null
+					&& attribute.getId().equalsIgnoreCase(
+							GitHubTaskAttributes.LABEL.getId())) {
+
+				String attributeValue = attribute.getValue();
+				StringTokenizer st = new StringTokenizer(attributeValue, ",",
+						false);
+				while (st.hasMoreTokens()) {
+					labels.add(st.nextToken().trim());
 				}
+				break;
 
 			}
 		}

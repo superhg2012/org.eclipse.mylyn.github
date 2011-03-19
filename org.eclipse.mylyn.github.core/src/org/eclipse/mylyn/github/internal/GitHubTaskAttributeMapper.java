@@ -27,15 +27,31 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 
 	private List<String> labels;
 
+	/**
+	 * Create a new task attribute mapper for a specified repository
+	 * 
+	 * @param taskRepository
+	 */
 	public GitHubTaskAttributeMapper(TaskRepository taskRepository) {
 		super(taskRepository);
 	}
 
+	/**
+	 * Get the key of the attributes map.
+	 * 
+	 * @see org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper#mapToRepositoryKey(org.eclipse.mylyn.tasks.core.data.TaskAttribute,
+	 *      java.lang.String)
+	 */
 	@Override
 	public String mapToRepositoryKey(TaskAttribute parent, String key) {
 		return key;
 	}
 
+	/**
+	 * Get the value of a date attribute properly formatted.
+	 * 
+	 * @see org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper#getDateValue(org.eclipse.mylyn.tasks.core.data.TaskAttribute)
+	 */
 	@Override
 	public Date getDateValue(TaskAttribute attribute) {
 		String value = attribute.getValue();
@@ -49,21 +65,19 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 		return null;
 	}
 
+	/**
+	 * Provide the available list of labels from repository as options for Task
+	 * Attribute
+	 * 
+	 * @see org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper#getOptions(org.eclipse.mylyn.tasks.core.data.TaskAttribute)
+	 */
 	@Override
 	public Map<String, String> getOptions(TaskAttribute attribute) {
-
 		TaskAttribute mappedLabelAttribute = attribute.getTaskData().getRoot()
 				.getMappedAttribute(GitHub.GITHUB_TASK_LABEL);
 		if (mappedLabelAttribute != null) {
 			if (labels == null) {
-				try {
-					labels = GitHubService.getLabelsService(getTaskRepository())
-							.retrieve();
-				} catch (GitHubServiceException e) {
-					LOG.error("Failed to retrieve labels from server."
-							+ e.getMessage());
-				}
-
+				gatherLabels();
 			}
 			if (labels != null && (!labels.isEmpty())) {
 				Map<String, String> newLabels = new LinkedHashMap<String, String>();
@@ -74,6 +88,18 @@ public final class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 			}
 		}
 		return super.getOptions(attribute);
+	}
+
+	/**
+	 * Gather labels from server.
+	 */
+	private void gatherLabels() {
+		try {
+			labels = GitHubService.getLabelsService(getTaskRepository())
+					.retrieve();
+		} catch (GitHubServiceException e) {
+			LOG.error("Failed to retrieve labels from server." + e.getMessage());
+		}
 	}
 
 }

@@ -11,6 +11,12 @@ import org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnectorUI;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.junit.Test;
 
+/**
+ * Test the Repository Connector UI functionality.
+ * 
+ * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
+ * 
+ */
 @SuppressWarnings("restriction")
 public class GitHubRepositoryConnectorUITest {
 
@@ -20,12 +26,18 @@ public class GitHubRepositoryConnectorUITest {
 	private final GitHubRepositoryConnectorUI connectorUI;
 	private final TaskRepository repository;
 
+	/**
+	 * Create a new instance of the test.
+	 */
 	public GitHubRepositoryConnectorUITest() {
 		connectorUI = new GitHubRepositoryConnectorUI();
 		repository = new TaskRepository(GitHub.CONNECTOR_KIND,
 				GitHubRepositoryUrlBuilder.buildGitHubUrl("foo", "bar"));
 	}
 
+	/**
+	 * Find hyperlinks test.
+	 */
 	@Test
 	public final void testFindHyperlinksTaskRepositoryStringIntInt() {
 		IHyperlink[] hyperlinks = connectorUI.findHyperlinks(repository,
