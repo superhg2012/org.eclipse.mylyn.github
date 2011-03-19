@@ -8,7 +8,6 @@ import static org.eclipse.mylyn.github.internal.GitHub.API_URL_BASE;
 import static org.eclipse.mylyn.github.internal.GitHub.COMMENTS;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
@@ -20,27 +19,22 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHubCommentsService extends
-		AbstractGitHubService<GitHubComments> {
+public class GitHubCommentsService extends AbstractGitHubService {
 
 	protected GitHubCommentsService(TaskRepository repository) {
 		super(repository);
 	}
 
-	@Override
-	public GitHubComments create(GitHubComments comments)
-			throws GitHubServiceException {
-
-		return null;
-	}
-
 	/**
-	 * @param comments
-	 * @return
+	 * Add a new comment to GitHub for a specified issue.
+	 * 
+	 * @param comment
+	 * 
 	 * @throws GitHubServiceException
 	 * @note API /issues/comment/:user/:repo/:id
 	 */
-	public void create(GitHubComment comment) throws GitHubServiceException {
+	public final void create(GitHubComment comment)
+			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append("comment/")
 				.append(getTaskRepositoryUserName()).append("/")
@@ -50,18 +44,6 @@ public class GitHubCommentsService extends
 
 	}
 
-	@Override
-	public List<GitHubComments> retrieve() throws GitHubServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<GitHubComments> search(String filter)
-			throws GitHubServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	/**
 	 * Retrieve comments for a specified issue.
@@ -71,7 +53,6 @@ public class GitHubCommentsService extends
 	 * @note API issues/comments/:user/:repo/:number
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#retrieve(java.lang.String)
 	 */
-	@Override
 	public GitHubComments retrieve(String id) throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(COMMENTS)
@@ -81,18 +62,6 @@ public class GitHubCommentsService extends
 		return executeRetrieveComments(uri.toString(), getCredentials());
 	}
 
-	@Override
-	public GitHubComments update(GitHubComments comments)
-			throws GitHubServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void delete(String id) throws GitHubServiceException {
-		// TODO Auto-generated method stub
-
-	}
 
 	private GitHubComments executeRetrieveComments(String uri,
 			NameValuePair[] parametersBody) throws GitHubServiceException {

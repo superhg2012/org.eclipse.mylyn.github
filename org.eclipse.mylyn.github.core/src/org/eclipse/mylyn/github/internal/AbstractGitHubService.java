@@ -6,7 +6,6 @@ package org.eclipse.mylyn.github.internal;
 import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -28,7 +27,7 @@ import com.google.gson.Gson;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public abstract class AbstractGitHubService<T> {
+public abstract class AbstractGitHubService {
 
 	private final TaskRepository taskRepository;
 
@@ -42,58 +41,6 @@ public abstract class AbstractGitHubService<T> {
 		this.httpClient = new HttpClient();
 		this.gson = new Gson();
 	}
-
-	/**
-	 * Create a new entity
-	 * 
-	 * @param t
-	 *            - entity type
-	 * @return the newly created entity
-	 * @throws GitHubServiceException
-	 */
-	public abstract T create(T t) throws GitHubServiceException;
-
-	/**
-	 * Retrieve a collection of entities.
-	 * 
-	 * @return a collection of entities.
-	 */
-	public abstract List<T> retrieve() throws GitHubServiceException;
-
-	/**
-	 * Retrieve a filtered collection of entities
-	 * 
-	 * @param filter
-	 *            - filter to be applied
-	 * @return a filtered collection of entities.
-	 */
-	public abstract List<T> search(String filter) throws GitHubServiceException;
-
-	/**
-	 * Retrieve a specified entity
-	 * 
-	 * @param id
-	 *            - unique id of the entity
-	 * @return the entity
-	 */
-	public abstract T retrieve(String id) throws GitHubServiceException;
-	
-	/**
-	 * Update a specified entity
-	 * 
-	 * @param t
-	 *            - the entity
-	 * @return - updated entity
-	 */
-	public abstract T update(T t) throws GitHubServiceException;
-
-	/**
-	 * Delete a specified entity
-	 * 
-	 * @param id
-	 *            - unique id of the entity
-	 */
-	public abstract void delete(String id) throws GitHubServiceException;
 
 	protected final TaskRepository getTaskRepository() {
 		return taskRepository;

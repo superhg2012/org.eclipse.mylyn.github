@@ -21,7 +21,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 /**
  * Facility to perform API operations on a GitHub issue tracker.
  */
-public class GitHubService {
+public final class GitHubService {
 
 	/**
 	 * Create the client and JSON/Java interface object.

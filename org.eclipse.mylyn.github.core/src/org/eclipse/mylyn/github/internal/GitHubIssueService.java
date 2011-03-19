@@ -27,7 +27,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
+public class GitHubIssueService extends AbstractGitHubService {
 
 	public GitHubIssueService(TaskRepository repository) {
 		super(repository);
@@ -47,8 +47,8 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 	 * @note API POST Variables: login,api-token, title, body
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#create(java.lang.Object)
 	 */
-	@Override
-	public GitHubIssue create(GitHubIssue issue) throws GitHubServiceException {
+	public final GitHubIssue create(GitHubIssue issue)
+			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(OPEN)
 				.append(getTaskRepositoryUserName()).append("/")
@@ -69,8 +69,7 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 	 * 
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#retrieve()
 	 */
-	@Override
-	public List<GitHubIssue> retrieve() throws GitHubServiceException {
+	public final List<GitHubIssue> retrieve() throws GitHubServiceException {
 		List<GitHubIssue> issues = new ArrayList<GitHubIssue>();
 		issues.addAll(getClosedIssues().getIssues());
 		issues.addAll(getOpenedIssues().getIssues());
@@ -90,7 +89,6 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 	 * 
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#search(java.lang.String)
 	 */
-	@Override
 	public final List<GitHubIssue> search(String filter)
 			throws GitHubServiceException {
 		List<GitHubIssue> issues = new ArrayList<GitHubIssue>();
@@ -101,6 +99,17 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 		return issues;
 	}
 
+	/**
+	 * Get a collection of filtered issues.
+	 * 
+	 * @param filter
+	 *            - filter to be applied
+	 * @param status
+	 *            - status of the issue (open or closed)
+	 * @return a collection of GitHub issues.
+	 * @throws GitHubServiceException
+	 *             in case that the issues could not be retrieved from server.
+	 */
 	public final GitHubIssues getFilteredIssues(String filter, String status)
 			throws GitHubServiceException {
 		String uri;
@@ -126,8 +135,7 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 	 * 
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#retrieve(java.lang.String)
 	 */
-	@Override
-	public GitHubIssue retrieve(String id) throws GitHubServiceException {
+	public final GitHubIssue retrieve(String id) throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(SHOW)
 				.append(getTaskRepositoryUserName()).append("/")
@@ -150,20 +158,14 @@ public class GitHubIssueService extends AbstractGitHubService<GitHubIssue> {
 	 * 
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#update(java.lang.Object)
 	 */
-	@Override
-	public GitHubIssue update(GitHubIssue issue) throws GitHubServiceException {
+	public final GitHubIssue update(GitHubIssue issue)
+			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE)
 				.append(API_ISSUES_ROOT).append(EDIT)
 				.append(getTaskRepositoryUserName()).append("/")
 				.append(getTaskRepositoryProjectName()).append("/")
 				.append(issue.getNumber());
 		return executeRetrieveIssue(uri.toString(), setRequestBody(issue));
-	}
-
-	@Override
-	public void delete(String id) throws GitHubServiceException {
-		throw new UnsupportedOperationException("Operation is not implemented.");
-
 	}
 
 	/**

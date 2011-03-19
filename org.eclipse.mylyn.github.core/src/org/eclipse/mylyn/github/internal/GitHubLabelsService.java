@@ -20,7 +20,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
  * 
  */
-public class GitHubLabelsService extends AbstractGitHubService<String> {
+public class GitHubLabelsService extends AbstractGitHubService {
 
 	public GitHubLabelsService(TaskRepository repository) {
 		super(repository);
@@ -32,8 +32,7 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 	 * @note API issues/label/add/:user/:repo/:label
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#create(java.lang.Object)
 	 */
-	@Override
-	public String create(String label) throws GitHubServiceException {
+	public final String create(String label) throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(GitHub.ADD_LABEL)
 				.append(getTaskRepositoryUserName()).append("/")
@@ -50,7 +49,7 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 	 * @note API issues/label/add/:user/:repo/:label/:number
 	 * 
 	 */
-	public String addLabelToIssue(String label, String issueId)
+	public final String addLabelToIssue(String label, String issueId)
 			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(GitHub.ADD_LABEL)
@@ -67,8 +66,7 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 	 * @note API issues/labels/:user/:repo
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#retrieve()
 	 */
-	@Override
-	public List<String> retrieve() throws GitHubServiceException {
+	public final List<String> retrieve() throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append("labels/")
 				.append(getTaskRepositoryUserName()).append("/")
@@ -76,20 +74,6 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 		return executeRetrieveLabels(uri.toString(), getCredentials());
 	}
 
-	@Override
-	public List<String> search(String filter) throws GitHubServiceException {
-		throw new GitHubServiceException("Unsupported operation");
-	}
-
-	@Override
-	public String retrieve(String issueId) throws GitHubServiceException {
-		throw new GitHubServiceException("Unsupported operation");
-	}
-
-	@Override
-	public String update(String t) throws GitHubServiceException {
-		throw new GitHubServiceException("Unsupported operation");
-	}
 
 	/**
 	 * Remove a label from project
@@ -97,8 +81,7 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 	 * @note API issues/label/remove/:user/:repo/:label
 	 * @see org.eclipse.mylyn.github.internal.AbstractGitHubService#delete(java.lang.String)
 	 */
-	@Override
-	public void delete(String label) throws GitHubServiceException {
+	public final void delete(String label) throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(GitHub.REMOVE_LABEL)
 				.append(getTaskRepositoryUserName()).append("/")
@@ -113,7 +96,7 @@ public class GitHubLabelsService extends AbstractGitHubService<String> {
 	 * @note API issues/label/remove/:user/:repo/:label:/number
 	 * 
 	 */
-	public void deleteLabelFromIssue(String label, String issueId)
+	public final void deleteLabelFromIssue(String label, String issueId)
 			throws GitHubServiceException {
 		StringBuilder uri = new StringBuilder(API_URL_BASE);
 		uri.append(API_ISSUES_ROOT).append(GitHub.REMOVE_LABEL)
