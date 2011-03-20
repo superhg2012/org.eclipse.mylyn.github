@@ -26,7 +26,6 @@
 		<module>org.eclipse.mylyn.github.feature</module>
 		<module>org.eclipse.mylyn.github.site</module>
 		<module>org.eclipse.mylyn.github.tests</module>
-		<module>org.eclipse.mylyn.github.coverage</module>
 	</modules>
 
 	<repositories>
@@ -149,7 +148,7 @@
 			<properties>
 				<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.es</emma.session.out.file>
 				<emma.filter>org.eclipse.mylyn.github.*</emma.filter>
-				<emma.instrument.bundles>org.eclipse.mylyn.github.tests</emma.instrument.bundles>
+				<emma.instrument.bundles>org.eclipse.mylyn.github.core</emma.instrument.bundles>
 			</properties>
 			<build>
 				<plugins>
@@ -175,7 +174,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
 					<plugin>
 						<groupId>org.sonatype.tycho</groupId>
 						<artifactId>maven-osgi-test-plugin</artifactId>
@@ -212,7 +210,6 @@
 							</dependencies>
 						</configuration>
 					</plugin>
-
 				</plugins>
 			</build>
 		</profile>
