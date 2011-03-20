@@ -1,32 +1,16 @@
-h2. Fork Specifics
+h2. What's New
 
-This is a fork of the "degree99 fork":https://github.com/dgreen99/org.eclipse.mylyn.github , that is a fork of "original connector":http://smilebase.github.com/org.eclipse.mylyn.github by smilebase.  
+Build: 0.2.2.201103202139
+* new repository query options
+* supports ordering in task list
+* supports comments in task editor
+* supports labels as task attributes
+* provide information about the reporter of the issue.
+* support for private repositories
+* support for internationalization (all content is now UTF-8)
+* fixed all bugs mention in smilebase and dgreen99 forks.
 
 h2. Installation update site
 
 * "Mylyn Github Connector Update Site":http://devsprint.github.com/org.eclipse.mylyn.github/site
-
-h2. Developers
-
-
-h3. Eclipse coding standards
-
-* "Sun's coding standards for Java":http://java.sun.com/docs/codeconv/index.html
-* "Naming Conventions":http://wiki.eclipse.org/Naming_Conventions#Examples_Packages
-
-h3. Resources
-
-* "Eclipse Wiki Reference Page":http://wiki.eclipse.org/Mylyn_Integrator_Reference
-* "Eclipse SVN":http://dev.eclipse.org/viewsvn/
-* "Mylyn integration howto":http://jvliet.blogspot.com/2007/02/creating-mylar-connector-plugin-for.html
-* "Eclipse/Mylyn Trac Source":http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.mylyn/org.eclipse.mylyn.trac.ui/src/org/eclipse/mylyn/internal/trac/?root=Tools_Project
-* "Eclipse/Mylyn Ditz Source":http://github.com/mikegr/mylyn-ditz-connector/tree/master
-
-
-h3. Dependencies
-
-* "gson version 1.6":http://www.eclipse.org/downloads/download.php?r=1&file=/tools/orbit/downloads/drops/S20110124210048/bundles/com.google.gson_1.6.0.v201101131530.jar
-* "commons-httpclient version 3.1.0":http://www.eclipse.org/downloads/download.php?r=1&file=/tools/orbit/downloads/drops/S20110124210048/bundles/org.apache.commons.httpclient_3.1.0.v201012070820.jar
-* "commons-logging version 1.1.1":http://www.eclipse.org/downloads/download.php?r=1&file=/tools/orbit/downloads/drops/S20110124210048/bundles/org.apache.commons.logging_1.1.1.v201101211721.jar
-* "commons-codec version 1.2.0":http://www.eclipse.org/downloads/download.php?r=1&file=/tools/orbit/downloads/drops/S20110124210048/bundles/org.apache.commons.codec_1.2.0.v20100518-1135.jar
 
