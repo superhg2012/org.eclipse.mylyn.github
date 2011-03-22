@@ -48,7 +48,7 @@
 										<emma enabled="true">
 											<report>
 												<infileset dir="${project.build.directory}/emma"
-													includes="*.es" />
+													includes="*.em" />
 												<txt outfile="${project.build.directory}/emma/coverage.txt" />
 												<xml outfile="${project.build.directory}/emma/coverage.xml" />
 												<html outfile="${project.build.directory}/emma/coverage.html" />
