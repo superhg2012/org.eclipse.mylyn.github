@@ -57,7 +57,7 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 		}
 		ImageDescriptor imageDescriptor = AbstractUIPlugin
 				.imageDescriptorFromPlugin("org.eclipse.mylyn.github.ui",
-						"images/git-logo.png");
+						"images/github-logo.png");
 		if (imageDescriptor == null) {
 			return null;
 		}
