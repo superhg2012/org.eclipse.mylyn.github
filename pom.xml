@@ -147,8 +147,8 @@
 			</activation>
 			<properties>
 				<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.em</emma.session.out.file>
-				<emma.filter>org.eclipse.mylyn.github.*</emma.filter>
-				<emma.instrument.bundles>org.eclipse.mylyn.github.core</emma.instrument.bundles>
+				<emma.filter>-*Test*</emma.filter>
+				<emma.instrument.bundles>org.eclipse.mylyn.github.core, org.eclipse.mylyn.github.ui</emma.instrument.bundles>
 			</properties>
 			<build>
 				<plugins>
