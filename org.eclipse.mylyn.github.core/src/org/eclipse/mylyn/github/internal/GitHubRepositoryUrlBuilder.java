@@ -31,6 +31,15 @@ public final class GitHubRepositoryUrlBuilder {
 		return null;
 	}
 
+	public static String buildTaskRepositoryUserName(String repositoryUrl) {
+		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		}
+		return null;
+	}
+
+
 	/**
 	 * Uses github.com
 	 * 

@@ -4,6 +4,7 @@
 package org.eclipse.mylyn.github.internal;
 
 import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryProject;
+import static org.eclipse.mylyn.github.internal.GitHubRepositoryUrlBuilder.buildTaskRepositoryUserName;
 
 import java.io.IOException;
 
@@ -96,7 +97,7 @@ public abstract class AbstractGitHubService {
 	}
 
 	protected final String getTaskRepositoryUserName() {
-		return getTaskRepository().getUserName();
+		return buildTaskRepositoryUserName(getTaskRepository().getUrl());
 	}
 
 	protected final String getTaskRepositoryProjectName() {
