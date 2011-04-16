@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mylyn GitHub Tests
 Bundle-SymbolicName: org.eclipse.mylyn.github.tests
-Bundle-Version: 0.2.2.qualifier
+Bundle-Version: 0.2.3.qualifier
 Export-Package: org.eclipse.mylyn.github.tests,
  org.eclipse.mylyn.github.tests.resources,
  org.eclipse.mylyn.github.tests.ui
