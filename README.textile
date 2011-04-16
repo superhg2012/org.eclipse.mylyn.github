@@ -1,5 +1,11 @@
 h2. What's New
 
+Build: 0.2.3.  - bug fixing
+* "fix bug #17":https://github.com/devsprint/org.eclipse.mylyn.github/pull/17
+* "fix bug #16":https://github.com/devsprint/org.eclipse.mylyn.github/issues/16
+
+
+
 Build: 0.2.2.201103202139
 * new repository query options
 * supports ordering in task list
